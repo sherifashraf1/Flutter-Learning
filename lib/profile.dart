@@ -79,6 +79,15 @@ class MyApp extends StatelessWidget {
 
   // region Profile Image
   Widget _profileImage() {
+    String? imageUrl;
+    // Validate the profile image URL (must be HTTPS and absolute)
+    final parsedUrl = Uri.tryParse(userInfo.profileImageUrl);
+    if (parsedUrl != null &&
+        parsedUrl.hasScheme &&
+        parsedUrl.isAbsolute &&
+        parsedUrl.scheme == 'https') {
+      imageUrl = userInfo.profileImageUrl;
+    }
     return Container(
       width: 100,
       height: 100,
@@ -88,7 +97,8 @@ class MyApp extends StatelessWidget {
         border: Border.all(color: Colors.orange, width: 1),
       ),
       child: ClipOval(
-        child: Image.network(
+        child: imageUrl != null ?
+        Image.network(
           userInfo.profileImageUrl,
           width: 100,
           height: 100,
@@ -109,7 +119,14 @@ class MyApp extends StatelessWidget {
               fit: BoxFit.cover,
             );
           },
-        ),
+        )
+        :
+        Image.asset(
+          "assets/images/profilePlaceHolder.png",
+          width: 100,
+          height: 100,
+          fit: BoxFit.cover,
+        )
       ),
     );
   }
