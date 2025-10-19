@@ -1,4 +1,4 @@
-# profile_demo_app_with_flutter
+# Profile demo app with flutter
 
 A **single-page Flutter profile UI** that displays user information including profile picture, bio, and personal details like email, gender, date of birth, nationality, phone number, and address. Features a modern, scrollable layout with placeholders for images and an **“Edit Profile”** button.
 
