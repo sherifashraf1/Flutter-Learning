@@ -1,16 +1,24 @@
 # profile_demo_app_with_flutter
 
-A new Flutter project.
+A **single-page Flutter profile UI** that displays user information including profile picture, bio, and personal details like email, gender, date of birth, nationality, phone number, and address. Features a modern, scrollable layout with placeholders for images and an **“Edit Profile”** button.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## Features
 
-A few resources to get you started if this is your first Flutter project:
+- Clean, scrollable, and mobile-friendly profile screen.
+- Circular profile image with network loading, placeholder, and error handling.
+- Displays user name, bio, and personal information (email, gender, birth date, nationality, phone, address).
+- Modern styling with rounded containers, shadows, and consistent spacing.
+- Responsive layout for different screen sizes.
+- “Edit Profile” button at the bottom (placeholder for future functionality).
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Screenshots
+
+### Profile Screen - iPhone 17 Pro Max
+![Profile Screen - iPhone 17 Pro Max](assets/screenshots/profile_screen_iphone-17-pro-max.png)
+
+### Profile Screen - Pixel 5
+![Profile Screen - Pixel 5](assets/screenshots/profile_screen_pixel-5.png)
