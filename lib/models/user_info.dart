@@ -1,4 +1,7 @@
 
+import 'package:profile_demo_app_with_flutter/extensions/string+extensions.dart';
+import '../shared-enums/date_format_style_enum.dart';
+
 class UserInfo {
   final String name;
   final String email;
@@ -21,5 +24,8 @@ class UserInfo {
     required this.bio,
     required this.profileImageUrl
   });
-}
 
+  String formattedBirthDate({DateFormatStyle style = DateFormatStyle.dMyyyy}) {
+    return dateOfBirth.formattedDate(style);
+  }
+}
