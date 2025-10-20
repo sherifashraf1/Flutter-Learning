@@ -8,33 +8,30 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: Color(0xFFFef5F3),
-        appBar: AppBar(
-          title: const Text("Profile Information"),
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
-        ),
-        body: LayoutBuilder(
-          builder: (_, constraints) {
-            return ListView(
-              padding: EdgeInsets.all(16),
-              children: [
-                ProfileHeader(),
-                SizedBox(height: 16),
-                PersonalInformationCard()
-              ],
-            );
-          },
-        ),
-        bottomNavigationBar: SafeArea(
-          top: false,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
-            child: EditProfileButton(),
-          ),
+    return Scaffold(
+      backgroundColor: Color(0xFFFef5F3),
+      appBar: AppBar(
+        title: const Text("Profile Information"),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+      ),
+      body: LayoutBuilder(
+        builder: (_, constraints) {
+          return ListView(
+            padding: EdgeInsets.all(16),
+            children: [
+              ProfileHeader(),
+              SizedBox(height: 16),
+              PersonalInformationCard()
+            ],
+          );
+        },
+      ),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: EditProfileButton(),
         ),
       ),
     );
