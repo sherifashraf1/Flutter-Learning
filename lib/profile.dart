@@ -18,10 +18,10 @@ class ProfileScreen extends StatelessWidget {
       body: LayoutBuilder(
         builder: (_, constraints) {
           return ListView(
-            padding: EdgeInsets.all(16),
+            padding: EdgeInsets.only(left: 16, right: 16, bottom: 16, top: 32),
             children: [
               ProfileHeader(),
-              SizedBox(height: 16),
+              SizedBox(height: 20),
               PersonalInformationCard()
             ],
           );
