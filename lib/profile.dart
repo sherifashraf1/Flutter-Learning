@@ -173,32 +173,16 @@ class MyApp extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 6),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Label
-          SizedBox(
-            width:
-            MediaQuery.of(context).size.width *
-                0.4, // adjust this width based on your text length
-            child: Text(
-              title,
-              style: const TextStyle(color: Colors.grey, fontSize: 13),
-            ),
-          ),
-
-          // Value
-          Expanded(
-            child: Text(
-              subTitle,
-              style: const TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
-                fontSize: 13,
-              ),
-            ),
-          ),
+          Expanded(flex: 3,
+              child: Text(
+                  title, style: TextStyle(color: Colors.grey, fontSize: 13))),
+          Expanded(flex: 3,
+              child: Text(subTitle, style: TextStyle(color: Colors.black,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500),)),
         ],
-      ),
+      )
     );
   }
   // endregion
