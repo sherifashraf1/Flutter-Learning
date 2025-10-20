@@ -9,7 +9,6 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFef5F3),
       appBar: AppBar(
         title: const Text("Profile Information"),
         backgroundColor: Colors.white,
@@ -18,8 +17,8 @@ class ProfileScreen extends StatelessWidget {
       body: LayoutBuilder(
         builder: (_, constraints) {
           return ListView(
-            padding: EdgeInsets.only(left: 16, right: 16, bottom: 16, top: 32),
-            children: [
+            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16, top: 32),
+            children: const [
               ProfileHeader(),
               SizedBox(height: 20),
               PersonalInformationCard()
