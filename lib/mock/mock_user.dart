@@ -14,12 +14,12 @@ import '../models/user_info.dart';
 
 UserInfo get userInfo => UserInfo(
   name: "Sherif Ashraf",
-  email: "sherif@sherif.com",
-  phoneNumber: "+201062232138",
+  email: "test@ld.com",
+  phoneNumber: "+201111111111",
   dateOfBirth: "1994-02-04T00:00:00Z",
   gender: "Male",
   nationality: "Egyptian",
-  address: "Egypt, Zagazig",
+  address: "123 Test Street, Zag",
   bio:"Mobile developer skilled in SwiftUI and Flutter, "
       "passionate about building high-quality apps with clean architecture and exploring new technologies.",
   profileImageUrl: "https://i.postimg.cc/ZRpyxjBY/s.png",
