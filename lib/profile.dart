@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../mock/mock_user.dart';
 import '../widgets/profile/profile_header.dart';
 import '../widgets/profile/personal_information_card.dart';
 import '../widgets/profile/edit_profile_button.dart';
@@ -16,7 +15,7 @@ class ProfileScreen extends StatelessWidget {
         appBar: AppBar(
           title: const Text("Profile Information"),
           backgroundColor: Colors.white,
-          foregroundColor: Colors.black, // ensure readable contrast
+          foregroundColor: Colors.black,
         ),
         body: LayoutBuilder(
           builder: (_, constraints) {
