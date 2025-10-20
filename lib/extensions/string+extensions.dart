@@ -6,8 +6,9 @@ extension FormattedDateString on String {
     try {
       final date = DateTime.parse(this);
       return DateFormat(style.pattern).format(date);
-    } catch(_) {
-      return this;
+    } catch (_) {
+      // Return an empty string or a placeholder for invalid dates.
+      return '';
     }
   }
 }
