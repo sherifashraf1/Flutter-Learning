@@ -109,6 +109,7 @@ class MyApp extends StatelessWidget {
               "assets/images/profilePlaceHolder.png",
               width: 100,
               height: 100,
+              fit: BoxFit.cover
             );
           },
           errorBuilder: (context, error, stackTrace) {
