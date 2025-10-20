@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(
           title: const Text("Profile Information"),
           backgroundColor: Colors.white,
+          foregroundColor: Colors.black, // ensure readable contrast
         ),
         body: LayoutBuilder(
           builder: (_, constraints) {
