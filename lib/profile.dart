@@ -20,31 +20,13 @@ class ProfileScreen extends StatelessWidget {
         ),
         body: LayoutBuilder(
           builder: (_, constraints) {
-            return SingleChildScrollView(
-              physics: AlwaysScrollableScrollPhysics(),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: IntrinsicHeight(
-                  child: Container(
-                    alignment: Alignment.center,
-                    margin: EdgeInsets.all(16),
-                    child: Container(
-                      alignment: Alignment.center,
-                      margin: EdgeInsets.only(top: 16),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        spacing: 12,
-                        children: [
-                          ProfileHeader(),
-                          SizedBox(height: 16),
-                          PersonalInformationCard(),
-                          Spacer(),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+            return ListView(
+              padding: EdgeInsets.all(16),
+              children: [
+                ProfileHeader(),
+                SizedBox(height: 16),
+                PersonalInformationCard()
+              ],
             );
           },
         ),

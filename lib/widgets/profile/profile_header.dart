@@ -7,6 +7,7 @@ class ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      spacing: 8,
       children: [
         Container(
           width: 100,
@@ -41,12 +42,10 @@ class ProfileHeader extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 12),
         Text(
           userInfo.name,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
-        const SizedBox(height: 8),
         Text(
           userInfo.bio,
           style: const TextStyle(fontSize: 16),
