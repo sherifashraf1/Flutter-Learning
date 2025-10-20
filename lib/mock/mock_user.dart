@@ -22,5 +22,5 @@ UserInfo get userInfo => UserInfo(
   address: "123 Test Street, Zag",
   bio:"Mobile developer skilled in SwiftUI and Flutter, "
       "passionate about building high-quality apps with clean architecture and exploring new technologies.",
-  profileImageUrl: "https://i.postimg.cc/ZRpyxjBY/s.png",
+  profileImageUrl: "https://i.postimg.cc/ZRpyxjBY/Screenshot-2025-10-17-at-8-54-34-PM.png",
 );

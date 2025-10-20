@@ -17,29 +17,31 @@ class ProfileHeader extends StatelessWidget {
             border: Border.all(color: Colors.orange, width: 1),
           ),
           child: ClipOval(
-            child: Image.network(
-              userInfo.profileImageUrl,
-              width: 100,
-              height: 100,
-              fit: BoxFit.cover,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Image.asset(
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // Always show placeholder first (at the bottom)
+                Image.asset(
                   "assets/images/profilePlaceHolder.png",
-                  width: 100,
-                  height: 100,
                   fit: BoxFit.cover,
-                );
-              },
-              errorBuilder: (context, error, stackTrace) {
-                return Image.asset(
-                  "assets/images/profilePlaceHolder.png",
-                  width: 100,
-                  height: 100,
+                ),
+                // Then overlay the network image on top when available
+                Image.network(
+                  userInfo.profileImageUrl,
                   fit: BoxFit.cover,
-                );
-              },
-            ),
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) {
+                      return child; // show image when done
+                    } else {
+                      return const SizedBox.shrink(); // hide while loading
+                    }
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return const SizedBox.shrink(); // keep placeholder on error
+                  },
+                ),
+              ],
+            )
           ),
         ),
         Text(
