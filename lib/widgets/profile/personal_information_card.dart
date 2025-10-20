@@ -15,7 +15,7 @@ class PersonalInformationCard extends StatelessWidget {
           BoxShadow(
             color: Colors.black.withOpacity(0.08),
             blurRadius: 4,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -23,11 +23,11 @@ class PersonalInformationCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 8,
         children: [
-          Text(
+         const Text(
             "Personal Information",
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
           ),
-          SizedBox(),
+          const SizedBox(),
           _infoRow(context, "Email", userInfo.email),
           _infoRow(context, "Gender", userInfo.gender),
           _infoRow(context, "Birth Date", userInfo.formattedBirthDate()),
@@ -41,21 +41,21 @@ class PersonalInformationCard extends StatelessWidget {
 
   Widget _infoRow(BuildContext context, String title, String subTitle) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
           Expanded(
             flex: 3,
             child: Text(
               title,
-              style: TextStyle(color: Colors.grey, fontSize: 13),
+              style: const TextStyle(color: Colors.grey, fontSize: 13),
             ),
           ),
           Expanded(
             flex: 3,
             child: Text(
               subTitle,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.black,
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
