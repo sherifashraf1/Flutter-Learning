@@ -21,7 +21,9 @@ class MovieCard extends StatelessWidget {
           child: Stack(
             children: [
               NetworkImageWithPlaceholder(
-                imageUrl: 'https://image.tmdb.org/t/p/w780${movie.posterPath}',
+                imageUrl: (movie.posterPath ?? '').isNotEmpty
+                ? 'https://image.tmdb.org/t/p/w780${movie.posterPath}'
+                : null,
                 placeholder: 'assets/images/moviePlaceholder.png',
                 aspectRatio: 1/1,
                 width: 100,
