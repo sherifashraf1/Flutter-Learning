@@ -4,6 +4,7 @@ import '../../services/movies_services.dart';
 import '../../shared-enums/shared_enums.dart';
 import '../../shared/empty_state/data_state_widget.dart';
 import '../../widgets/movies/network_image_with_placholder.dart';
+import '../../utils/secure_error_handler.dart';
 import '/models/movie_details_model.dart';
 import '/models/movie_credits_model.dart';
 import '/models/movie_model.dart';
@@ -45,9 +46,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       final details = await _service.getMovieDetails(widget.movieId);
       setState(() => _detailsState = DataState.success(details));
     } catch (error) {
+      SecureErrorHandler.logError(error, context: 'loadMovieDetails');
       setState(() => _detailsState = DataState.error(
         title: "Failed to load movie details",
-        description: error.toString(),
+        description: SecureErrorHandler.handleError(error, context: 'movie details'),
         onRetry: _loadMovieDetails,
       ));
     }
@@ -59,9 +61,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       final credits = await _service.getActorsForMovie(widget.movieId);
       setState(() => _creditsState = DataState.success(credits));
     } catch (error) {
+      SecureErrorHandler.logError(error, context: 'loadCredits');
       setState(() => _creditsState = DataState.error(
         title: "Failed to load cast",
-        description: error.toString(),
+        description: SecureErrorHandler.handleError(error, context: 'cast information'),
         onRetry: _loadCredits,
       ));
     }
@@ -80,9 +83,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
         setState(() => _similarState = DataState.success(similar));
       }
     } catch (error) {
+      SecureErrorHandler.logError(error, context: 'loadSimilarMovies');
       setState(() => _similarState = DataState.error(
         title: "Failed to load similar movies",
-        description: error.toString(),
+        description: SecureErrorHandler.handleError(error, context: 'similar movies'),
         onRetry: _loadSimilarMovies,
       ));
     }
@@ -101,9 +105,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
         setState(() => _recommendationsState = DataState.success(recommendations));
       }
     } catch (error) {
+      SecureErrorHandler.logError(error, context: 'loadRecommendations');
       setState(() => _recommendationsState = DataState.error(
         title: "Failed to load recommendations",
-        description: error.toString(),
+        description: SecureErrorHandler.handleError(error, context: 'recommendations'),
         onRetry: _loadRecommendations,
       ));
     }
