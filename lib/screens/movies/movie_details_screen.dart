@@ -202,6 +202,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
               ],
             ),
 
+            const SizedBox(height: 12),
             // Similar Movies
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -227,6 +228,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 12),
 
             // Recommendations
             Column(
