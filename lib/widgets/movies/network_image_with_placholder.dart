@@ -53,9 +53,9 @@ class NetworkImageWithPlaceholder extends StatelessWidget {
             httpHeaders: const {
               'User-Agent': 'Flutter Movie App',
             },
-            // Enable caching
-            memCacheWidth: width?.toInt(),
-            memCacheHeight: height?.toInt(),
+            // Enable caching with high resolution
+            memCacheWidth: null, 
+            memCacheHeight: null,
           ),
       ],
     );

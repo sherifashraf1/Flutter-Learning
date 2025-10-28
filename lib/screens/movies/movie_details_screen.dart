@@ -136,7 +136,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   NetworkImageWithPlaceholder(
-                    imageUrl: 'https://image.tmdb.org/t/p/w500${_detailsState.data!.backdropPath}',
+                    imageUrl: 'https://image.tmdb.org/t/p/w1280${_detailsState.data!.backdropPath}',
                     placeholder: 'assets/images/moviePlaceholder.png',
                     aspectRatio: 16 / 9,
                   ),
