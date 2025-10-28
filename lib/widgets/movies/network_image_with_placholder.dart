@@ -43,8 +43,8 @@ class NetworkImageWithPlaceholder extends StatelessWidget {
                 child: const Center(
                   child: Icon(
                     Icons.broken_image,
-                    color: Colors.grey,
-                    size: 24,
+                    color: Colors.red,
+                    size: 100,
                   ),
                 ),
               );
