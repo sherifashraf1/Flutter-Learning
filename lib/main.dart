@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:profile_demo_app_with_flutter/router/app_router.dart';
 import '../screens/profile_screen.dart';
 
 void main() {
@@ -16,7 +17,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFFef5F3),
       ),
-      home: const ProfileScreen(),
+      initialRoute: AppRouter.moviesList,
+      onGenerateRoute: AppRouter.generateRoute,
     );
   }
 }
