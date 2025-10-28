@@ -18,7 +18,7 @@ class Movie {
       id: json['id'],
       title: json['title'],
       posterPath: json['poster_path'],
-      voteAverage: json['vote_average'],
+      voteAverage: (json['vote_average'] as num?)?.toDouble(),
       releaseDate: json['release_date'],
     );
   }
