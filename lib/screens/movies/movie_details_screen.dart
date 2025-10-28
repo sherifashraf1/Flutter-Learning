@@ -195,10 +195,15 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 12),
-                      itemBuilder: (_, index) => _buildCard(
-                        imageUrl: 'https://image.tmdb.org/t/p/w200${credits.cast![index].profilePath}',
-                        name: credits.cast![index].name,
-                      ),
+                      itemBuilder: (_, index) {
+                        final actor = credits.cast?[index];
+                        final hasProfile = (actor?.profilePath ?? '').isNotEmpty;
+                        final imageUrl = hasProfile ? 'https://image.tmdb.org/t/p/w200${actor!.profilePath}' : null;
+                        return _buildCard(
+                          imageUrl: imageUrl ?? '',
+                          name: actor?.name ?? 'Unknown',
+                        );
+                      },
                       separatorBuilder: (_, __) => const SizedBox(width: 12),
                       itemCount: credits.cast?.length ?? 0,
                     ),
