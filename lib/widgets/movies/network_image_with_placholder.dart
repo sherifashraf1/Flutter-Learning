@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class NetworkImageWithPlaceholder extends StatelessWidget {
   final String? imageUrl;
@@ -29,15 +30,32 @@ class NetworkImageWithPlaceholder extends StatelessWidget {
           fit: fit,
         ),
 
-        if (imageUrl != null)
-          Image.network(
-            imageUrl!,
+        if (imageUrl != null && imageUrl!.isNotEmpty)
+          CachedNetworkImage(
+            imageUrl: imageUrl!,
             fit: fit,
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return const SizedBox.shrink();
+            placeholder: (context, url) => const SizedBox.shrink(),
+            errorWidget: (context, url, error) {
+              // Log error for debugging (in production, use proper logging)
+              debugPrint('Image load error: $error');
+              return Container(
+                color: Colors.grey.shade800,
+                child: const Center(
+                  child: Icon(
+                    Icons.broken_image,
+                    color: Colors.grey,
+                    size: 24,
+                  ),
+                ),
+              );
             },
-            errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+            // Add headers for better security
+            httpHeaders: const {
+              'User-Agent': 'Flutter Movie App',
+            },
+            // Enable caching
+            memCacheWidth: width?.toInt(),
+            memCacheHeight: height?.toInt(),
           ),
       ],
     );
