@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../utils/secure_error_handler.dart';
 import '/models/movie_details_model.dart';
 import '/models/generic_response_model.dart';
 import '/models/movie_model.dart';
@@ -11,60 +12,99 @@ class MoviesService {
 
   Future<GenericResponse<Movie>> getNowPlayingMovies(int page) async {
     final url = Uri.parse('$baseUrl/movie/now_playing?api_key=$apiKey&page=$page');
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      return GenericResponse<Movie>.fromJson(
-          jsonDecode(response.body), (json) => Movie.fromJson(json));
-    } else {
-      throw Exception(
-          "Failed to fetch now playing movies: ${response.statusCode})");
+    
+    try {
+      final response = await http.get(url);
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return GenericResponse<Movie>.fromJson(data, (json) => Movie.fromJson(json));
+      } else {
+        throw Exception('Failed to fetch movies: ${response.statusCode}');
+      }
+    } catch (error) {
+      SecureErrorHandler.logError(error, context: 'getNowPlayingMovies');
+      throw Exception(SecureErrorHandler.handleError(error, context: 'getNowPlayingMovies'));
     }
   }
 
   Future<MovieDetails> getMovieDetails(int movieId) async {
     final url = Uri.parse("$baseUrl/movie/$movieId?api_key=$apiKey");
+    
     await Future.delayed(const Duration(seconds: 1));
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      return MovieDetails.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception("Failed to fetch movie details: ${response.statusCode}");
+    
+    try {
+      final response = await http.get(url);
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return MovieDetails.fromJson(data);
+      } else {
+        throw Exception('Failed to fetch movie details: ${response.statusCode}');
+      }
+    } catch (error) {
+      SecureErrorHandler.logError(error, context: 'getMovieDetails');
+      throw Exception(SecureErrorHandler.handleError(error, context: 'getMovieDetails'));
     }
   }
 
   Future<MovieCredits> getActorsForMovie(int id) async {
-    await Future.delayed(const Duration(seconds: 2));
     final url = Uri.parse("$baseUrl/movie/$id/credits?api_key=$apiKey");
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      return MovieCredits.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception("Failed to load credits");
+    
+    await Future.delayed(const Duration(seconds: 2));
+    
+    try {
+      final response = await http.get(url);
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return MovieCredits.fromJson(data);
+      } else {
+        throw Exception('Failed to load credits: ${response.statusCode}');
+      }
+    } catch (error) {
+      SecureErrorHandler.logError(error, context: 'getActorsForMovie');
+      throw Exception(SecureErrorHandler.handleError(error, context: 'getActorsForMovie'));
     }
   }
 
   Future<GenericResponse<Movie>> getSimilarMovies(int id, int page) async {
-    await Future.delayed(const Duration(seconds: 2));
     final url = Uri.parse('$baseUrl/movie/$id/similar?api_key=$apiKey&page=$page');
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      return GenericResponse<Movie>.fromJson(
-          jsonDecode(response.body), (json) => Movie.fromJson(json));
-    } else {
-      throw Exception("Failed to load similar movies");
+    
+    await Future.delayed(const Duration(seconds: 2));
+    
+    try {
+      final response = await http.get(url);
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return GenericResponse<Movie>.fromJson(data, (json) => Movie.fromJson(json));
+      } else {
+        throw Exception('Failed to load similar movies: ${response.statusCode}');
+      }
+    } catch (error) {
+      SecureErrorHandler.logError(error, context: 'getSimilarMovies');
+      throw Exception(SecureErrorHandler.handleError(error, context: 'getSimilarMovies'));
     }
   }
 
   Future<GenericResponse<Movie>> getRecommendations(int id, int page) async {
-    await Future.delayed(const Duration(seconds: 2));
     final url = Uri.parse('$baseUrl/movie/$id/recommendations?api_key=$apiKey&page=$page');
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      return GenericResponse<Movie>.fromJson(
-          jsonDecode(response.body), (json) => Movie.fromJson(json)
-      );
-    } else {
-      throw Exception("Failed to load recommendations");
+    
+    await Future.delayed(const Duration(seconds: 2));
+    
+    try {
+      final response = await http.get(url);
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return GenericResponse<Movie>.fromJson(data, (json) => Movie.fromJson(json));
+      } else {
+        throw Exception('Failed to load recommendations: ${response.statusCode}');
+      }
+    } catch (error) {
+      SecureErrorHandler.logError(error, context: 'getRecommendations');
+      throw Exception(SecureErrorHandler.handleError(error, context: 'getRecommendations'));
     }
   }
 }
