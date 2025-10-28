@@ -21,56 +21,41 @@ class NetworkImageWithPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget imageContent = Stack(
-      fit: StackFit.expand,
-      children: [
-        // Placeholder
-        Image.asset(
-          placeholder,
-          fit: fit,
-        ),
+    final hasImage = imageUrl != null && imageUrl!.isNotEmpty;
 
-        if (imageUrl != null && imageUrl!.isNotEmpty)
-          CachedNetworkImage(
+    Widget buildPlaceholder() => Image.asset(placeholder, fit: fit);
+
+    Widget content = hasImage
+        ? CachedNetworkImage(
             imageUrl: imageUrl!,
             fit: fit,
-            placeholder: (context, url) => const SizedBox.shrink(),
+            placeholder: (context, url) => buildPlaceholder(),
             errorWidget: (context, url, error) {
-              // Log error for debugging (in production, use proper logging)
               debugPrint('Image load error: $error');
               return Container(
                 color: Colors.grey.shade800,
                 child: const Center(
-                  child: Icon(
-                    Icons.broken_image,
-                    color: Colors.red,
-                    size: 100,
-                  ),
+                  child: Icon(Icons.broken_image, color: Colors.red, size: 100),
                 ),
               );
             },
-            // Add headers for better security
-            httpHeaders: const {
-              'User-Agent': 'Flutter Movie App',
-            },
-            // Enable caching with high resolution
-            memCacheWidth: null, 
+            httpHeaders: const {'User-Agent': 'Flutter Movie App'},
+            memCacheWidth: null,
             memCacheHeight: null,
-          ),
-      ],
-    );
+          )
+        : buildPlaceholder();
 
     if (aspectRatio != null) {
       return AspectRatio(
         aspectRatio: aspectRatio!,
-        child: imageContent,
-      );
-    } else {
-      return SizedBox(
-        width: width ?? double.infinity,
-        height: height ?? 100,
-        child: imageContent,
+        child: content,
       );
     }
+
+    return SizedBox(
+      width: width ?? double.infinity,
+      height: height ?? 100,
+      child: content,
+    );
   }
 }
