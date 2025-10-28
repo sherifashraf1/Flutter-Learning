@@ -1,6 +1,6 @@
 
 import 'package:profile_demo_app_with_flutter/extensions/string+extensions.dart';
-import '../shared-enums/date_format_style_enum.dart';
+import '../shared-enums/shared_enums.dart';
 
 class UserInfo {
   final String name;

@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
-import '../shared-enums/date_format_style_enum.dart';
+import '../shared-enums/shared_enums.dart';
 
 extension FormattedDateString on String {
   String formattedDate([DateFormatStyle style = DateFormatStyle.dMyyyy]) {
