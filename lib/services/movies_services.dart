@@ -7,8 +7,8 @@ import '/models/movie_model.dart';
 import '/models/movie_credits_model.dart';
 
 class MoviesService {
-  final String? baseUrl = 'https://api.themoviedb.org/3';
-  final String? apiKey = '5af01490e5f50397189600f40cbce99f';
+  final String baseUrl = 'https://api.themoviedb.org/3';
+  final String apiKey = '5af01490e5f50397189600f40cbce99f';
 
   Future<GenericResponse<Movie>> getNowPlayingMovies(int page) async {
     final url = Uri.parse('$baseUrl/movie/now_playing?api_key=$apiKey&page=$page');
