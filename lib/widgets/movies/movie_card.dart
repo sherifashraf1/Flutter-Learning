@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/movie_model.dart';
 import 'network_image_with_placholder.dart';
+import 'rating_widget.dart';
 
 class MovieCard extends StatelessWidget {
   final Movie movie;
@@ -14,7 +15,7 @@ class MovieCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
-        contentPadding: EdgeInsets.all(8),
+        contentPadding: EdgeInsets.only(left: 12, right: 12, top: 8, bottom: 8),
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: Stack(
@@ -31,15 +32,24 @@ class MovieCard extends StatelessWidget {
         ),
         title: Text(
             movie.title,
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
         ),
         subtitle: Text(
             movie.releaseDate ?? "",
-            style: TextStyle(color: Colors.lightBlueAccent, fontWeight: FontWeight.bold)
-        ),
-        trailing: Text(
-            movie.voteAverage.toString(),
             style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold)
+        ),
+        trailing: RatingWidget(
+          rating: movie.voteAverage,
+          starSize: 14,
+          filledStarColor: Colors.greenAccent,
+          emptyStarColor: Colors.grey.shade600,
+          ratingTextStyle: const TextStyle(
+            color: Colors.lightBlueAccent,
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+          ),
         ),
       ),
     );
