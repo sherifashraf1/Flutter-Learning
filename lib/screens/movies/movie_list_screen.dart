@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:profile_demo_app_with_flutter/shared/empty_state/data_state_widget.dart';
 import '../../router/app_router.dart';
-import '../../services/movies_services.dart';
+import '../../services/movies_services/movies_services.dart';
 import '../../shared-enums/shared_enums.dart';
 import '../../widgets/movies/movie_card.dart';
 import '../../utils/secure_error_handler.dart';
-import '/models/movie_model.dart';
+import '../../models/movies_models/movie_model.dart';
 import '/shared/empty_state/data_state.dart';
 import '/shared/loading/loading_widget.dart';
 

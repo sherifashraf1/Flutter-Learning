@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../models/movie_model.dart';
+import '../../models/movies_models/movie_model.dart';
 import '../../constants/app_constants.dart';
 import 'network_image_with_placholder.dart';
 import 'rating_widget.dart';

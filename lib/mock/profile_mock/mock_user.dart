@@ -1,4 +1,4 @@
-import '../models/user_info.dart';
+import '../../models/profile_models/user_info.dart';
 
 // final user = UserInfo(
 //   name: "Sherif Ashraf",

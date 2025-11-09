@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../mock/mock_user.dart';
+import '../../mock/profile_mock/mock_user.dart';
 
 class PersonalInformationCard extends StatelessWidget {
   const PersonalInformationCard({super.key});

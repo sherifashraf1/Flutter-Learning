@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../mock/mock_user.dart';
+import '../../mock/profile_mock/mock_user.dart';
 
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({super.key});

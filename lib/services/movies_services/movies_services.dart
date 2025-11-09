@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../utils/secure_error_handler.dart';
-import '/models/movie_details_model.dart';
-import '/models/generic_response_model.dart';
-import '/models/movie_model.dart';
-import '/models/movie_credits_model.dart';
+import '../../utils/secure_error_handler.dart';
+import '/models/movies_models/movie_details_model.dart';
+import '../../models/movies_models/generic_response_model.dart';
+import '../../models/movies_models/movie_model.dart';
+import '../../models/movies_models/movie_credits_model.dart';
 
 class MoviesService {
   final String? baseUrl = dotenv.env['BASE_URL'];
