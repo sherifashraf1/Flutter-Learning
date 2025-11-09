@@ -12,13 +12,19 @@ class MoviesService {
   final String? baseUrl = dotenv.env['BASE_URL'];
   final String? apiKey = dotenv.env['API_KEY'];
 
-  Future<GenericResponse<Movie>> getNowPlayingMovies(int page) async {
+  Uri _buildUri(String path, [Map<String, String>? params]) {
     if (baseUrl == null || apiKey == null) {
       throw Exception('API configuration missing');
     }
-    final url = Uri.parse(
-      '$baseUrl/movie/now_playing?api_key=$apiKey&page=$page',
-    );
+    final queryParams = {
+      'api_key' : apiKey!,
+      if (params != null) ...params,
+    };
+      return Uri.parse('$baseUrl$path').replace(queryParameters: queryParams);
+    }
+
+  Future<GenericResponse<Movie>> getNowPlayingMovies(int page) async {
+    final url = _buildUri('/movie/now_playing', {'page': '$page'});
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -39,10 +45,7 @@ class MoviesService {
   }
 
   Future<MovieDetails> getMovieDetails(int movieId) async {
-    if (baseUrl == null || apiKey == null) {
-      throw Exception('API configuration missing');
-    }
-    final url = Uri.parse("$baseUrl/movie/$movieId?api_key=$apiKey");
+    final url = _buildUri("/movie/$movieId");
     await simulateNetworkDelay(Duration(seconds: 1));
     try {
       final response = await http.get(url);
@@ -63,10 +66,7 @@ class MoviesService {
   }
 
   Future<MovieCredits> getActorsForMovie(int id) async {
-    if (baseUrl == null || apiKey == null) {
-      throw Exception('API configuration missing');
-    }
-    final url = Uri.parse("$baseUrl/movie/$id/credits?api_key=$apiKey");
+    final url = _buildUri("/movie/$id/credits");
     await simulateNetworkDelay();
     try {
       final response = await http.get(url);
@@ -85,12 +85,7 @@ class MoviesService {
   }
 
   Future<GenericResponse<Movie>> getSimilarMovies(int id, int page) async {
-    if (baseUrl == null || apiKey == null) {
-      throw Exception('API configuration missing');
-    }
-    final url = Uri.parse(
-      '$baseUrl/movie/$id/similar?api_key=$apiKey&page=$page',
-    );
+    final url = _buildUri("/movie/$id/similar", {'page': '$page'});
     await simulateNetworkDelay();
     try {
       final response = await http.get(url);
@@ -114,12 +109,7 @@ class MoviesService {
   }
 
   Future<GenericResponse<Movie>> getRecommendations(int id, int page) async {
-    if (baseUrl == null || apiKey == null) {
-      throw Exception('API configuration missing');
-    }
-    final url = Uri.parse(
-      '$baseUrl/movie/$id/recommendations?api_key=$apiKey&page=$page',
-    );
+    final url = _buildUri("/movie/$id/recommendations", {'page': '$page'});
     await simulateNetworkDelay();
     try {
       final response = await http.get(url);
