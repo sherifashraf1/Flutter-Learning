@@ -14,11 +14,14 @@ class Movie {
   });
 
   factory Movie.fromJson(Map<String, dynamic> json) {
+    final idRaw = json['id'];
+    final voteAverageRaw = json['vote_average'];
+
     return Movie(
-      id: json['id'],
-      title: json['title'],
+      id: idRaw is num ? idRaw.toInt() : (idRaw as int? ?? 0),
+      title: json['title'] ?? '',
       posterPath: json['poster_path'],
-      voteAverage: (json['vote_average'] as num?)?.toDouble(),
+      voteAverage: voteAverageRaw is num ? voteAverageRaw.toDouble() : null,
       releaseDate: json['release_date'],
     );
   }

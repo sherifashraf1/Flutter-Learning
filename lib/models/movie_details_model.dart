@@ -22,14 +22,18 @@ class MovieDetails {
   });
 
   factory MovieDetails.fromJson(Map<String, dynamic> json) {
+    final voteAverageRaw = json['vote_average'];
+    final runtimeRaw = json['runtime'];
+    final idRaw = json['id'];
+
     return MovieDetails(
-        id: json['id'],
-        title: json['title'],
+        id: idRaw is num ? idRaw.toInt() : (idRaw as int? ?? 0),
+        title: json['title'] ?? '',
         overview: json['overview'],
         backdropPath: json['backdrop_path'],
         releaseDate: json['release_date'],
-        runtime: json['runtime'],
-        voteAverage: (json['vote_average'] ?? 0).toDouble(),
+        runtime: runtimeRaw is num ? runtimeRaw.toInt() : null,
+        voteAverage: voteAverageRaw is num ? voteAverageRaw.toDouble() : null,
         genres: (json['genres'] as List<dynamic>?)
             ?.map((genreJson) => Genre.fromJson(genreJson))
             .toList(),
@@ -45,6 +49,10 @@ class Genre {
   Genre({required this.id, required this.name});
 
   factory Genre.fromJson(Map<String, dynamic> json) {
-    return Genre(id: json['id'], name: json['name']);
+    final idRaw = json['id'];
+    return Genre(
+      id: idRaw is num ? idRaw.toInt() : (idRaw as int? ?? 0),
+      name: json['name'] ?? '',
+    );
   }
 }

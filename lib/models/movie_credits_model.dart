@@ -5,8 +5,9 @@ class MovieCredits {
   MovieCredits({this.id, this.cast});
 
   factory MovieCredits.fromJson(Map<String, dynamic> json) {
+    final idRaw = json['id'];
     return MovieCredits(
-      id: json['id'],
+      id: idRaw is num ? idRaw.toInt() : null,
       cast: (json['cast'] as List<dynamic>?)
           ?.map((actorJson) => Actor.fromJson(actorJson))
           .toList(),
@@ -36,14 +37,19 @@ class Actor {
   });
 
   factory Actor.fromJson(Map<String, dynamic> json) {
+    final castIdRaw = json['cast_id'];
+    final genderRaw = json['gender'];
+    final idRaw = json['id'];
+    final orderRaw = json['order'];
+
     return Actor(
-      castId: json['cast_id'],
+      castId: castIdRaw is num ? castIdRaw.toInt() : null,
       character: json['character'],
       creditId: json['credit_id']?.toString(),
-      gender: json['gender'],
-      id: json['id'],
+      gender: genderRaw is num ? genderRaw.toInt() : null,
+      id: idRaw is num ? idRaw.toInt() : null,
       name: json['name'],
-      order: json['order'],
+      order: orderRaw is num ? orderRaw.toInt() : null,
       profilePath: json['profile_path'],
     );
   }
