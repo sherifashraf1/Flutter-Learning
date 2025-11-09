@@ -11,7 +11,7 @@ class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case moviesList:
-        return MaterialPageRoute(builder: (_) => MoviesListScreen());
+        return MaterialPageRoute(builder: (_) => const MoviesListScreen());
       case movieDetails:
         final movieId = settings.arguments as int;
         return MaterialPageRoute(builder: (_) =>
