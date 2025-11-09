@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../models/todo/todo_model.dart';
 import '../screens/movies/movie_details_screen.dart';
 import '../screens/movies/movie_list_screen.dart';
 import '../screens/todo/settings_screen.dart';
+import '../screens/todo/task_details_screen.dart';
 import '../screens/todo/tasks_screen.dart';
 
 class AppRouter {
@@ -30,7 +32,8 @@ class AppRouter {
       case tasksList:
         return MaterialPageRoute(builder: (_) => TasksScreen());
       case taskDetails:
-        return MaterialPageRoute(builder: (_) => TasksScreen());
+        final todo = settings.arguments as Todo;
+        return MaterialPageRoute(builder: (_) => TaskDetailsScreen(todo: todo));
       case AppRouter.settings:
         return MaterialPageRoute(builder: (_) => const SettingsScreen());
 
