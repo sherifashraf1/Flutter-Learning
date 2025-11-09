@@ -140,7 +140,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
               childBuilder: (details) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  NetworkImageWithPlaceholder(
+                  network_image_with_placeholder(
                     imageUrl: details.backdropPath?.isNotEmpty == true
                         ? 'https://image.tmdb.org/t/p/w1280${details.backdropPath}'
                         : null,
@@ -303,7 +303,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(6),
-              child: NetworkImageWithPlaceholder(
+              child: network_image_with_placeholder(
                 imageUrl: imageUrl,
                 placeholder: 'assets/images/moviePlaceholder.png',
                 height: height,

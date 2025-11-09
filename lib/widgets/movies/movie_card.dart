@@ -20,7 +20,7 @@ class MovieCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           child: Stack(
             children: [
-              NetworkImageWithPlaceholder(
+              network_image_with_placeholder(
                 imageUrl: (movie.posterPath ?? '').isNotEmpty
                 ? 'https://image.tmdb.org/t/p/w780${movie.posterPath}'
                 : null,

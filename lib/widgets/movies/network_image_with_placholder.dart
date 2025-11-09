@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-class NetworkImageWithPlaceholder extends StatelessWidget {
+class network_image_with_placeholder extends StatelessWidget {
   final String? imageUrl;
   final String placeholder;
   final double? height;
@@ -9,7 +9,7 @@ class NetworkImageWithPlaceholder extends StatelessWidget {
   final double? aspectRatio;
   final BoxFit fit;
 
-  const NetworkImageWithPlaceholder({
+  const network_image_with_placeholder({
     super.key,
     required this.imageUrl,
     required this.placeholder,
