@@ -22,22 +22,35 @@ class DataStateWidget<T> extends StatelessWidget {
     return containerHeight != null
         ? SizedBox(
       height: containerHeight,
-      child: _buildContent(),
+      child: _buildContent(context),
     )
-        : _buildContent();
+        : _buildContent(context);
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(BuildContext context) {
     switch (dataState.state) {
       case ViewState.loading:
-        return _buildLoadingWidget(dataState.loadingType);
+        // During pull-to-refresh, if we have data and childBuilder, show the child (list)
+        // For pullToRefresh without data, return empty scrollable container
+        if (dataState.loadingType == LoadingType.pullToRefresh) {
+          if (childBuilder != null && dataState.data != null) {
+            return childBuilder!(dataState.data as T);
+          }
+          // No data during pullToRefresh - RefreshIndicator shows loading indicator
+          // We return empty scrollable container so RefreshIndicator can detect scroll gesture
+          return _wrapInScrollView(context, const SizedBox.shrink(), fillHeight: true);
+        }
+        // For other loading types, show loading widget
+        final loadingWidget = _buildLoadingWidget(dataState.loadingType);
+        // Make loading state scrollable for RefreshIndicator while keeping it visible
+        return _wrapInScrollView(context, loadingWidget, fillHeight: true);
       case ViewState.success:
         return childBuilder != null
             ? childBuilder!(dataState.data as T)
             : const SizedBox.shrink();
       case ViewState.empty:
       case ViewState.error:
-        return Center(
+        final content = Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
@@ -78,7 +91,29 @@ class DataStateWidget<T> extends StatelessWidget {
             ),
           ),
         );
+        // Make empty/error states scrollable for RefreshIndicator
+        return _wrapInScrollView(context, content);
     }
+  }
+
+  Widget _wrapInScrollView(BuildContext context, Widget child, {bool fillHeight = false}) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenHeight = MediaQuery.of(context).size.height;
+        final availableHeight = constraints.maxHeight > 0 
+            ? constraints.maxHeight 
+            : screenHeight;
+        final minHeight = fillHeight ? availableHeight : availableHeight * 0.8;
+        
+        return SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: minHeight,
+            child: child,
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildLoadingWidget(LoadingType? type, {bool horizontal = false}) {

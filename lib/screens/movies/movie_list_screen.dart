@@ -53,9 +53,20 @@ class _MoviesListScreenState extends State<MoviesListScreen> {
 
     if (isLoadMore) {
       setState(() => _isLoadingMore = true);
-    } else if (!isRefresh) {
-      setState(() => _moviesState = DataState.loading(loadingType));
-      _movies.clear();
+    } else {
+      // For refresh: keep existing content visible if it exists, only clear error/empty states
+      // For other loading types: clear movies and show loading
+      if (isRefresh) {
+        // Only change to loading state if we're NOT in success state with movies
+        // This keeps the list visible during refresh, but clears error/empty states
+        final hasContent = _moviesState.state == ViewState.success && _movies.isNotEmpty;
+        if (!hasContent) {
+          setState(() => _moviesState = DataState.loading(LoadingType.pullToRefresh));
+        }
+      } else {
+        setState(() => _moviesState = DataState.loading(loadingType));
+        _movies.clear();
+      }
     }
 
     if (isRefresh) _pageIndex = 1;
@@ -146,7 +157,8 @@ class _MoviesListScreenState extends State<MoviesListScreen> {
             arguments: movie.id,
           ),
           child: MovieCard(movie: movie),
-        );      },
+        );
+      },
     );
   }
 }
