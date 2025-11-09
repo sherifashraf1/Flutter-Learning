@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import '../screens/movies/movie_details_screen.dart';
 import '../screens/movies/movie_list_screen.dart';
+import '../screens/todo/settings_screen.dart';
+import '../screens/todo/tasks_screen.dart';
 
 class AppRouter {
   // Route names
   static const moviesList = 'movies_list_screen';
   static const movieDetails = 'movie_details_screen';
+  static const tasksList = 'tasks_list_screen';
+  static const taskDetails = 'task_details_screen';
+  static const settings = 'settings_screen';
 
   // Route generator
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -22,6 +27,13 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => _buildInvalidArgumentsScreen(),
         );
+      case tasksList:
+        return MaterialPageRoute(builder: (_) => TasksScreen());
+      case taskDetails:
+        return MaterialPageRoute(builder: (_) => TasksScreen());
+      case AppRouter.settings:
+        return MaterialPageRoute(builder: (_) => const SettingsScreen());
+
       default:
         return MaterialPageRoute(
           builder: (_) => _buildRouteNotFoundScreen(),
