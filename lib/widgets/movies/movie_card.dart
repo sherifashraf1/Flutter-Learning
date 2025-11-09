@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/movie_model.dart';
 import '../../constants/app_constants.dart';
-import 'network_image_with_placholder.dart';
+import 'network_image_with_placeholder.dart';
 import 'rating_widget.dart';
 
 class MovieCard extends StatelessWidget {

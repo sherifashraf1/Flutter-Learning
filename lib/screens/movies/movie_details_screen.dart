@@ -3,7 +3,7 @@ import '../../models/generic_response_model.dart';
 import '../../services/movies_services.dart';
 import '../../shared-enums/shared_enums.dart';
 import '../../shared/empty_state/data_state_widget.dart';
-import '../../widgets/movies/network_image_with_placholder.dart';
+import '../../widgets/movies/network_image_with_placeholder.dart';
 import '../../utils/secure_error_handler.dart';
 import '../../constants/app_constants.dart';
 import '/models/movie_details_model.dart';
