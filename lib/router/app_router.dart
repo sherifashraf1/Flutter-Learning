@@ -32,15 +32,20 @@ class AppRouter {
       case tasksList:
         return MaterialPageRoute(builder: (_) => TasksScreen());
       case taskDetails:
-        final todo = settings.arguments as Todo;
-        return MaterialPageRoute(builder: (_) => TaskDetailsScreen(todo: todo));
+        final todo = settings.arguments;
+        if (todo is Todo) {
+          return MaterialPageRoute(
+            builder: (_) => TaskDetailsScreen(todo: todo),
+          );
+        }
+        return MaterialPageRoute(
+          builder: (_) => _buildInvalidArgumentsScreen(),
+        );
       case AppRouter.settings:
         return MaterialPageRoute(builder: (_) => const SettingsScreen());
 
       default:
-        return MaterialPageRoute(
-          builder: (_) => _buildRouteNotFoundScreen(),
-        );
+        return MaterialPageRoute(builder: (_) => _buildRouteNotFoundScreen());
     }
   }
 
@@ -62,7 +67,7 @@ class AppRouter {
                 const Icon(Icons.error_outline, color: Colors.red, size: 64),
                 const SizedBox(height: 16),
                 const Text(
-                  "Invalid Movie ID",
+                  "Invalid Argument",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -72,7 +77,7 @@ class AppRouter {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  "Movie ID is required to view details.",
+                  "Something went wrong.",
                   style: TextStyle(color: Colors.white70),
                   textAlign: TextAlign.center,
                 ),
@@ -85,10 +90,6 @@ class AppRouter {
   }
 
   static Widget _buildRouteNotFoundScreen() {
-    return Scaffold(
-      body: Center(
-        child: Text("Route not found"),
-      ),
-    );
+    return Scaffold(body: Center(child: Text("Route not found")));
   }
 }
