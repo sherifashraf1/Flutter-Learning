@@ -8,6 +8,7 @@ class AppTheme {
   /// Builds the light theme with enhanced color system
   static ThemeData buildLightTheme() {
     return ThemeData(
+      fontFamily: 'Raleway',
       useMaterial3: true,
       brightness: Brightness.light,
       colorScheme: AppThemeColors.lightColorScheme,
@@ -103,6 +104,7 @@ class AppTheme {
   /// Builds the dark theme with enhanced color system
   static ThemeData buildDarkTheme() {
     return ThemeData(
+      fontFamily: 'RobotoSlab',
       useMaterial3: true,
       brightness: Brightness.dark,
       colorScheme: AppThemeColors.darkColorScheme,
