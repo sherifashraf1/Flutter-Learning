@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:profile_demo_app_with_flutter/screens/profile/profile_screen.dart';
 import '../models/todo/todo_model.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/movies/movie_details_screen.dart';
@@ -14,7 +15,8 @@ class AppRouter {
   static const homeScreen = "home_screen";
   static const tasksList = 'tasks_list_screen';
   static const taskDetails = 'task_details_screen';
-  static const settings = 'settings_screen';
+  static const settingsScreen = 'settings_screen';
+  static const profile = 'profile_screen';
 
   // Route generator
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -45,9 +47,10 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => _buildInvalidArgumentsScreen(),
         );
-      case AppRouter.settings:
+      case settingsScreen:
         return MaterialPageRoute(builder: (_) => const SettingsScreen());
-
+      case profile:
+        return MaterialPageRoute(builder: (_) => ProfileScreen());
       default:
         return MaterialPageRoute(builder: (_) => _buildRouteNotFoundScreen());
     }
