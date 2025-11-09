@@ -40,8 +40,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     _loadRecommendations();
   }
 
-  void _loadMovieDetails() async {
-    setState(() => _detailsState = DataState.loading(LoadingType.defaultLoading));
+  void _loadMovieDetails({bool isRetry = false}) async {
+    // Use defaultLoading only on first load, placeholder on retry
+    final loadingType = isRetry ? LoadingType.placeholder : LoadingType.defaultLoading;
+    setState(() => _detailsState = DataState.loading(loadingType));
     try {
       final details = await _service.getMovieDetails(widget.movieId);
       setState(() => _detailsState = DataState.success(details));
@@ -50,7 +52,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       setState(() => _detailsState = DataState.error(
         title: "Failed to load movie details",
         description: SecureErrorHandler.handleError(error, context: 'movie details'),
-        onRetry: _loadMovieDetails,
+        onRetry: () => _loadMovieDetails(isRetry: true),
       ));
     }
   }
@@ -126,60 +128,29 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       body: _detailsState.state == ViewState.loading && _detailsState.loadingType == LoadingType.defaultLoading
           ? const Center(child: LoadingWidget())
           : SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.only(bottom: 44),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Movie Details section
-            if (_detailsState.state == ViewState.success)
-              Column(
+            DataStateWidget<MovieDetails>(
+              dataState: _detailsState,
+              isInsideScrollable: true,
+              childBuilder: (details) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   NetworkImageWithPlaceholder(
-                    imageUrl: _detailsState.data?.backdropPath?.isNotEmpty == true
-                        ? 'https://image.tmdb.org/t/p/w1280${_detailsState.data!.backdropPath}'
+                    imageUrl: details.backdropPath?.isNotEmpty == true
+                        ? 'https://image.tmdb.org/t/p/w1280${details.backdropPath}'
                         : null,
                     placeholder: 'assets/images/moviePlaceholder.png',
                     aspectRatio: 16 / 9,
                   ),
-                  _buildOverview(_detailsState.data!),
+                  _buildOverview(details),
                 ],
-              )
-            else if (_detailsState.state == ViewState.error)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        _detailsState.title ?? "Error",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _detailsState.description ?? "Something went wrong",
-                        style: const TextStyle(color: Colors.white70),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _loadMovieDetails,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.greenAccent,
-                          minimumSize: const Size.fromHeight(48),
-                        ),
-                        child: const Text("Retry"),
-                      ),
-                    ],
-                  ),
-                ),
               ),
+            ),
 
             const SizedBox(height: 12),
 
@@ -192,6 +163,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 DataStateWidget<MovieCredits>(
                   dataState: _creditsState,
                   containerHeight: 220,
+                  isInsideScrollable: true,
                   childBuilder: (credits) => SizedBox(
                     height: 220,
                     child: ListView.separated(
@@ -224,6 +196,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 DataStateWidget<GenericResponse<Movie>>(
                   dataState: _similarState,
                   containerHeight: 220,
+                  isInsideScrollable: true,
                   childBuilder: (resp) => SizedBox(
                     height: 220,
                     child: ListView.separated(
@@ -251,6 +224,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 DataStateWidget<GenericResponse<Movie>>(
                   dataState: _recommendationsState,
                   containerHeight: 220,
+                  isInsideScrollable: true,
                   childBuilder: (resp) => SizedBox(
                     height: 220,
                     child: ListView.separated(
