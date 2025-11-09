@@ -6,3 +6,6 @@ enum DateFormatStyle {
   final String pattern;
   const DateFormatStyle(this.pattern);
 }
+
+enum ViewState { loading, success, empty, error }
+enum LoadingType { defaultLoading, placeholder, pullToRefresh, loadMore }
