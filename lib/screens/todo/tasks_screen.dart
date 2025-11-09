@@ -5,7 +5,7 @@ import '../../models/todo/todo_model.dart';
 import '../../providers/todo_provider.dart';
 import '../../router/app_router.dart';
 import '../../widgets/todo/task_card.dart';
-import '../../widgets/todo/todo_bottom_sheet.dart';
+import '../../widgets/todo/reusable_bottom_sheet.dart';
 
 class TasksScreen extends ConsumerStatefulWidget {
   const TasksScreen({super.key});
@@ -101,9 +101,10 @@ class _TodoScreenState extends ConsumerState<TasksScreen> {
   }
 
   showAddTaskBottomSheet() {
-    showTodoBottomSheet(
+    showReusableBottomSheet(
       context: context,
       title: "Add Todo Task",
+      titleTextStyle: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
       onSave: (title, description) {
         ref.read(todoNotifierProvider.notifier).addTodo(title, description);
       },

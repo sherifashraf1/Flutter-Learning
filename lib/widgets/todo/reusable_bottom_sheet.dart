@@ -4,17 +4,23 @@ import 'package:flutter_riverpod/legacy.dart';
 
 final bottomSheetButtonEnabledProvider = StateProvider.autoDispose.family<bool, bool>((ref, initialValue) => initialValue);
 
-void showTodoBottomSheet({
+void showReusableBottomSheet({
   required BuildContext context,
   required String title,
-  String? existingTitle,
-  String? existingDescription,
   required void Function(String title, String description) onSave,
+  // Customizable texts
+  String? titleLabel,
+  String? descriptionLabel,
+  String? buttonText,
+  // Customizable text styles
+  TextStyle? titleTextStyle,
+  TextStyle? buttonTextStyle,
+  // Other customizable options
+  double? bottomSheetHeight,
 }) {
-  final titleController = TextEditingController(text: existingTitle ?? '');
-  final descriptionController = TextEditingController(text: existingDescription ?? '');
-  final hasExistingContent = (existingTitle ?? '').trim().isNotEmpty ||
-      (existingDescription ?? '').trim().isNotEmpty;
+  final titleController = TextEditingController();
+  final descriptionController = TextEditingController();
+  final hasExistingContent = false;
 
   showModalBottomSheet(
     context: context,
@@ -25,6 +31,12 @@ void showTodoBottomSheet({
       descriptionController: descriptionController,
       isSaveButtonEnabled: hasExistingContent,
       onSave: onSave,
+      titleLabel: titleLabel,
+      descriptionLabel: descriptionLabel,
+      buttonText: buttonText,
+      titleTextStyle: titleTextStyle,
+      buttonTextStyle: buttonTextStyle,
+      bottomSheetHeight: bottomSheetHeight,
     ),
   );
 }
@@ -35,6 +47,15 @@ class _BottomSheetContent extends ConsumerStatefulWidget {
   final TextEditingController descriptionController;
   final bool isSaveButtonEnabled;
   final void Function(String title, String description) onSave;
+  // Customizable texts
+  final String? titleLabel;
+  final String? descriptionLabel;
+  final String? buttonText;
+  // Customizable text styles
+  final TextStyle? titleTextStyle;
+  final TextStyle? buttonTextStyle;
+  // Other customizable options
+  final double? bottomSheetHeight;
 
   const _BottomSheetContent({
     required this.title,
@@ -42,6 +63,12 @@ class _BottomSheetContent extends ConsumerStatefulWidget {
     required this.descriptionController,
     required this.isSaveButtonEnabled,
     required this.onSave,
+    this.titleLabel,
+    this.descriptionLabel,
+    this.buttonText,
+    this.titleTextStyle,
+    this.buttonTextStyle,
+    this.bottomSheetHeight,
   });
 
   @override
@@ -59,12 +86,23 @@ class _BottomSheetContentState extends ConsumerState<_BottomSheetContent> {
               widget.descriptionController.text.trim().isNotEmpty;
     }
 
+    final defaultTitleStyle = widget.titleTextStyle ??
+        const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        );
+    final defaultButtonTextStyle = widget.buttonTextStyle ??
+        const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        );
+
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
       child: Container(
-        height: MediaQuery.of(context).size.height * 0.5,
+        height: widget.bottomSheetHeight ?? MediaQuery.of(context).size.height * 0.5,
         child: Column(
           children: [
             Expanded(
@@ -80,27 +118,24 @@ class _BottomSheetContentState extends ConsumerState<_BottomSheetContent> {
                     children: [
                       Text(
                         widget.title,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: defaultTitleStyle,
                       ),
                       const SizedBox(height: 20),
                       TextField(
                         controller: widget.titleController,
                         onChanged: (_) => updateButtonState(),
-                        decoration: const InputDecoration(
-                          labelText: 'Title',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: widget.titleLabel ?? 'Title',
+                          border: const OutlineInputBorder(),
                         ),
                       ),
                       const SizedBox(height: 20),
                       TextField(
                         controller: widget.descriptionController,
                         onChanged: (_) => updateButtonState(),
-                        decoration: const InputDecoration(
-                          labelText: 'Description',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: widget.descriptionLabel ?? 'Description',
+                          border: const OutlineInputBorder(),
                         ),
                         maxLines: 3,
                       ),
@@ -135,8 +170,9 @@ class _BottomSheetContentState extends ConsumerState<_BottomSheetContent> {
                         );
                       }
                           : null,
-                      child: const Text('Save',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      child: Text(
+                        widget.buttonText ?? 'Save',
+                        style: defaultButtonTextStyle,
                       ),
                     );
                   },
