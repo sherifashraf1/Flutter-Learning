@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/movie_model.dart';
+import '../../constants/app_constants.dart';
 import 'network_image_with_placholder.dart';
 import 'rating_widget.dart';
 
@@ -22,7 +23,7 @@ class MovieCard extends StatelessWidget {
             children: [
               network_image_with_placeholder(
                 imageUrl: (movie.posterPath ?? '').isNotEmpty
-                ? 'https://image.tmdb.org/t/p/w780${movie.posterPath}'
+                ? AppConstants.buildImageUrl(movie.posterPath, AppConstants.imageMediumSize)
                 : null,
                 placeholder: 'assets/images/moviePlaceholder.png',
                 aspectRatio: 1/1,

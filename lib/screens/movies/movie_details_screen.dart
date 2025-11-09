@@ -5,6 +5,7 @@ import '../../shared-enums/shared_enums.dart';
 import '../../shared/empty_state/data_state_widget.dart';
 import '../../widgets/movies/network_image_with_placholder.dart';
 import '../../utils/secure_error_handler.dart';
+import '../../constants/app_constants.dart';
 import '/models/movie_details_model.dart';
 import '/models/movie_credits_model.dart';
 import '/models/movie_model.dart';
@@ -142,7 +143,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 children: [
                   network_image_with_placeholder(
                     imageUrl: details.backdropPath?.isNotEmpty == true
-                        ? 'https://image.tmdb.org/t/p/w1280${details.backdropPath}'
+                        ? AppConstants.buildImageUrl(details.backdropPath, AppConstants.imageLargeSize)
                         : null,
                     placeholder: 'assets/images/moviePlaceholder.png',
                     aspectRatio: 16 / 9,
@@ -172,7 +173,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       itemBuilder: (_, index) {
                         final actor = credits.cast?[index];
                         final hasProfile = (actor?.profilePath ?? '').isNotEmpty;
-                        final imageUrl = hasProfile ? 'https://image.tmdb.org/t/p/w200${actor!.profilePath}' : null;
+                        final imageUrl = hasProfile ? AppConstants.buildImageUrl(actor!.profilePath, AppConstants.imageSmallSize) : null;
                         return _buildCard(
                           imageUrl: imageUrl ?? '',
                           name: actor?.name ?? 'Unknown',
@@ -203,7 +204,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       itemBuilder: (_, index) => _buildCard(
-                        imageUrl: 'https://image.tmdb.org/t/p/w200${resp.results![index].posterPath}',
+                        imageUrl: AppConstants.buildImageUrl(resp.results![index].posterPath, AppConstants.imageSmallSize),
                         name: resp.results![index].title,
                       ),
                       separatorBuilder: (_, __) => const SizedBox(width: 12),
@@ -231,7 +232,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       itemBuilder: (_, index) => _buildCard(
-                        imageUrl: 'https://image.tmdb.org/t/p/w200${resp.results![index].posterPath}',
+                        imageUrl: AppConstants.buildImageUrl(resp.results![index].posterPath, AppConstants.imageSmallSize),
                         name: resp.results![index].title,
                       ),
                       separatorBuilder: (_, __) => const SizedBox(width: 12),
