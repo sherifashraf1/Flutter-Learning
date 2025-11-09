@@ -25,14 +25,7 @@ class ProfileScreen extends StatelessWidget {
             ],
           );
         },
-      ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
-          child: EditProfileButton(),
-        ),
-      ),
+      )
     );
   }
 }
