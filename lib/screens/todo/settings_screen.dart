@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:profile_demo_app_with_flutter/router/app_router.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -18,8 +19,10 @@ class SettingsScreen extends StatelessWidget {
         children: [
           Card(
             child: SwitchListTile(
-              title: const Text('Dark Mode'),
-              subtitle: const Text('Switch between light and dark theme'),
+              title: const Text("Dark Mode",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
+              subtitle: const Text('Switch between light and dark theme',
+                  style: TextStyle(fontSize: 14)),
               value: isDarkMode,
               onChanged: (value) {
                 if (value) {
@@ -33,6 +36,25 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
           ),
+          SizedBox(height: 12),
+          InkWell(
+            onTap: () {
+              Navigator.pushNamed(context, AppRouter.profile);
+            },
+            child: Card(
+              child: Padding(padding: EdgeInsets.all(16),
+                child: Row(
+                  spacing: 8,
+                  children: [
+                    Icon(Icons.person),
+                    Text("Profile", style: TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),)
+                  ],
+                ),
+              ),
+
+            ),
+          )
         ],
       ),
     );
