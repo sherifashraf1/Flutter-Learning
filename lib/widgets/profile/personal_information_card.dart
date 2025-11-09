@@ -6,10 +6,11 @@ class PersonalInformationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.onSurface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -23,9 +24,11 @@ class PersonalInformationCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 8,
         children: [
-         const Text(
+         Text(
             "Personal Information",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+           style: TextStyle(fontWeight: FontWeight.bold,
+               fontSize: 20,
+               color: theme.colorScheme.surface),
           ),
           const SizedBox(),
           _infoRow(context, "Email", userInfo.email),
@@ -40,6 +43,7 @@ class PersonalInformationCard extends StatelessWidget {
   }
 
   Widget _infoRow(BuildContext context, String title, String subTitle) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
@@ -48,17 +52,17 @@ class PersonalInformationCard extends StatelessWidget {
             flex: 3,
             child: Text(
               title,
-              style: const TextStyle(color: Colors.grey, fontSize: 13),
+              style: TextStyle(color: theme.colorScheme.surface, fontSize: 13),
             ),
           ),
           Expanded(
             flex: 3,
             child: Text(
               subTitle,
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
+              style: TextStyle(
+                color: theme.colorScheme.surface,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
