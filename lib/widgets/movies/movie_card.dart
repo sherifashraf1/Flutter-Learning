@@ -21,7 +21,7 @@ class MovieCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           child: Stack(
             children: [
-              network_image_with_placeholder(
+              NetworkImageWithPlaceholder(
                 imageUrl: (movie.posterPath ?? '').isNotEmpty
                 ? AppConstants.buildImageUrl(movie.posterPath, AppConstants.imageMediumSize)
                 : null,
