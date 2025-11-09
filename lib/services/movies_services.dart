@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../utils/secure_error_handler.dart';
@@ -42,7 +43,7 @@ class MoviesService {
       throw Exception('API configuration missing');
     }
     final url = Uri.parse("$baseUrl/movie/$movieId?api_key=$apiKey");
-    await Future.delayed(const Duration(seconds: 1));
+    await simulateNetworkDelay(Duration(seconds: 1));
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -66,7 +67,7 @@ class MoviesService {
       throw Exception('API configuration missing');
     }
     final url = Uri.parse("$baseUrl/movie/$id/credits?api_key=$apiKey");
-    await Future.delayed(const Duration(seconds: 2));
+    await simulateNetworkDelay();
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -90,7 +91,7 @@ class MoviesService {
     final url = Uri.parse(
       '$baseUrl/movie/$id/similar?api_key=$apiKey&page=$page',
     );
-    await Future.delayed(const Duration(seconds: 2));
+    await simulateNetworkDelay();
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -119,7 +120,7 @@ class MoviesService {
     final url = Uri.parse(
       '$baseUrl/movie/$id/recommendations?api_key=$apiKey&page=$page',
     );
-    await Future.delayed(const Duration(seconds: 2));
+    await simulateNetworkDelay();
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -139,5 +140,9 @@ class MoviesService {
         SecureErrorHandler.handleError(error, context: 'getRecommendations'),
       );
     }
+  }
+
+  Future<void> simulateNetworkDelay([Duration duration = const Duration(seconds: 2)]) async {
+    if (kDebugMode) await Future.delayed(duration);
   }
 }
