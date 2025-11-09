@@ -18,7 +18,22 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        scaffoldBackgroundColor: const Color(0xFFFef5F3),
+        scaffoldBackgroundColor: const Color(0xFF0F172A),
+        colorScheme: const ColorScheme.dark(
+          primary: Colors.greenAccent,
+          onSurface: Colors.white,
+          surface: Color(0xFF1E293B),
+        ),
+        textTheme: const TextTheme(
+          titleLarge: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+          bodyMedium: TextStyle(
+            color: Colors.white70,
+          ),
+        ),
       ),
       initialRoute: AppRouter.moviesList,
       onGenerateRoute: AppRouter.generateRoute,

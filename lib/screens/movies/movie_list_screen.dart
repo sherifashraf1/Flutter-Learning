@@ -133,6 +133,7 @@ class _MoviesListScreenState extends State<MoviesListScreen> {
         child: DataStateWidget<List<Movie>>(
           dataState: _moviesState,
           childBuilder: (_) => _buildMovieList(),
+          titleTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.yellow),
         ),
       ),
     );

@@ -9,6 +9,9 @@ class DataStateWidget<T> extends StatelessWidget {
   final double placeholderHeight;
   final double? containerHeight;
   final bool isInsideScrollable;
+  final TextStyle? titleTextStyle;
+  final TextStyle? descriptionTextStyle;
+  final ButtonStyle? retryButtonStyle;
 
   const DataStateWidget({
     super.key,
@@ -17,6 +20,9 @@ class DataStateWidget<T> extends StatelessWidget {
     this.placeholderHeight = 180,
     this.containerHeight,
     this.isInsideScrollable = false,
+    this.titleTextStyle,
+    this.descriptionTextStyle,
+    this.retryButtonStyle,
   });
 
   @override
@@ -45,11 +51,11 @@ class DataStateWidget<T> extends StatelessWidget {
               : _wrapInScrollView(context, const SizedBox.shrink(), fillHeight: true);
         }
         // For other loading types, show loading widget
-        final loadingWidget = _buildLoadingWidget(dataState.loadingType);
+        final loadingWidget = _buildLoadingWidget(dataState.loadingType, context);
         // If inside a scrollable, don't wrap in another scrollable and don't use Center
         if (isInsideScrollable) {
           // Return loading widget without Center to avoid blocking scroll gestures
-          return _buildLoadingWidgetForScrollable(dataState.loadingType);
+          return _buildLoadingWidgetForScrollable(dataState.loadingType, context);
         }
         // Make loading state scrollable for RefreshIndicator while keeping it visible
         return _wrapInScrollView(context, loadingWidget, fillHeight: true);
@@ -59,6 +65,24 @@ class DataStateWidget<T> extends StatelessWidget {
             : const SizedBox.shrink();
       case ViewState.empty:
       case ViewState.error:
+        final theme = Theme.of(context);
+        final defaultTitleStyle = theme.textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+        ) ?? const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        );
+        final defaultDescriptionStyle = theme.textTheme.bodyMedium?.copyWith(
+          color: theme.colorScheme.onSurface,
+        ) ?? TextStyle(
+          color: theme.colorScheme.onSurface,
+        );
+        final defaultButtonStyle = ElevatedButton.styleFrom(
+          foregroundColor: theme.colorScheme.surface,
+          backgroundColor: theme.colorScheme.primary,
+          minimumSize: const Size.fromHeight(48),
+        );
+
         final content = Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
           child: Column(
@@ -67,11 +91,7 @@ class DataStateWidget<T> extends StatelessWidget {
               if (dataState.title != null)
                 Text(
                   dataState.title!,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: titleTextStyle ?? defaultTitleStyle,
                   textAlign: TextAlign.center,
                 ),
               if (dataState.description != null)
@@ -79,7 +99,7 @@ class DataStateWidget<T> extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 8),
                   child: Text(
                     dataState.description!,
-                    style: const TextStyle(color: Colors.white70),
+                    style: descriptionTextStyle ?? defaultDescriptionStyle,
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -88,10 +108,7 @@ class DataStateWidget<T> extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 16),
                   child: ElevatedButton(
                     onPressed: dataState.onRetry,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.greenAccent,
-                      minimumSize: const Size.fromHeight(48),
-                    ),
+                    style: retryButtonStyle ?? defaultButtonStyle,
                     child: const Text("Retry"),
                   ),
                 ),
@@ -127,7 +144,14 @@ class DataStateWidget<T> extends StatelessWidget {
     );
   }
 
-  Widget _buildLoadingWidget(LoadingType? type, {bool horizontal = false}) {
+  Widget _buildLoadingWidget(LoadingType? type, BuildContext context, {bool horizontal = false}) {
+    final theme = Theme.of(context);
+    final defaultLoadingTextStyle = theme.textTheme.bodyMedium?.copyWith(
+      color: theme.colorScheme.onSurface.withOpacity(0.7),
+    ) ?? TextStyle(
+      color: theme.colorScheme.onSurface.withOpacity(0.7),
+    );
+
     switch (type) {
       case LoadingType.defaultLoading:
         return const Center(child: LoadingWidget());
@@ -138,10 +162,13 @@ class DataStateWidget<T> extends StatelessWidget {
           child: Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Text("Loading...", style: TextStyle(color: Colors.white70)),
-                SizedBox(width: 8),
-                LoadingWidget(indicatorColor: Colors.greenAccent, size: 24),
+              children: [
+                Text("Loading...", style: defaultLoadingTextStyle),
+                const SizedBox(width: 8),
+                LoadingWidget(
+                  indicatorColor: theme.colorScheme.primary,
+                  size: 24,
+                ),
               ],
             ),
           ),
@@ -162,7 +189,14 @@ class DataStateWidget<T> extends StatelessWidget {
   }
 
   // Build loading widget for use inside scrollable (without Center to avoid blocking gestures)
-  Widget _buildLoadingWidgetForScrollable(LoadingType? type) {
+  Widget _buildLoadingWidgetForScrollable(LoadingType? type, BuildContext context) {
+    final theme = Theme.of(context);
+    final defaultLoadingTextStyle = theme.textTheme.bodyMedium?.copyWith(
+      color: theme.colorScheme.onSurface.withOpacity(0.7),
+    ) ?? TextStyle(
+      color: theme.colorScheme.onSurface.withOpacity(0.7),
+    );
+
     switch (type) {
       case LoadingType.defaultLoading:
         return const Padding(
@@ -177,10 +211,13 @@ class DataStateWidget<T> extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Text("Loading...", style: TextStyle(color: Colors.white70)),
-                SizedBox(width: 8),
-                LoadingWidget(indicatorColor: Colors.greenAccent, size: 24),
+              children: [
+                Text("Loading...", style: defaultLoadingTextStyle),
+                const SizedBox(width: 8),
+                LoadingWidget(
+                  indicatorColor: theme.colorScheme.primary,
+                  size: 24,
+                ),
               ],
             ),
           ),
