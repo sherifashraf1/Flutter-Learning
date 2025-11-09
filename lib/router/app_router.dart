@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/todo/todo_model.dart';
+import '../screens/home/home_screen.dart';
 import '../screens/movies/movie_details_screen.dart';
 import '../screens/movies/movie_list_screen.dart';
 import '../screens/todo/settings_screen.dart';
@@ -10,6 +11,7 @@ class AppRouter {
   // Route names
   static const moviesList = 'movies_list_screen';
   static const movieDetails = 'movie_details_screen';
+  static const homeScreen = "home_screen";
   static const tasksList = 'tasks_list_screen';
   static const taskDetails = 'task_details_screen';
   static const settings = 'settings_screen';
@@ -29,6 +31,8 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => _buildInvalidArgumentsScreen(),
         );
+      case homeScreen:
+        return MaterialPageRoute(builder: (_) => HomeScreen());
       case tasksList:
         return MaterialPageRoute(builder: (_) => TasksScreen());
       case taskDetails:
