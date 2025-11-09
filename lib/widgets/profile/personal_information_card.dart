@@ -10,13 +10,13 @@ class PersonalInformationCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: theme.colorScheme.onSurface,
+        color: theme.colorScheme.onSecondary,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+            color: theme.colorScheme.primary,
+            blurRadius: 0.2,
+            offset: const Offset(0, 0.2),
           ),
         ],
       ),
@@ -27,8 +27,7 @@ class PersonalInformationCard extends StatelessWidget {
          Text(
             "Personal Information",
            style: TextStyle(fontWeight: FontWeight.bold,
-               fontSize: 20,
-               color: theme.colorScheme.surface),
+               fontSize: 20),
           ),
           const SizedBox(),
           _infoRow(context, "Email", userInfo.email),
@@ -43,7 +42,6 @@ class PersonalInformationCard extends StatelessWidget {
   }
 
   Widget _infoRow(BuildContext context, String title, String subTitle) {
-    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
@@ -52,7 +50,7 @@ class PersonalInformationCard extends StatelessWidget {
             flex: 3,
             child: Text(
               title,
-              style: TextStyle(color: theme.colorScheme.surface, fontSize: 13),
+              style: TextStyle(fontSize: 13),
             ),
           ),
           Expanded(
@@ -60,7 +58,6 @@ class PersonalInformationCard extends StatelessWidget {
             child: Text(
               subTitle,
               style: TextStyle(
-                color: theme.colorScheme.surface,
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),

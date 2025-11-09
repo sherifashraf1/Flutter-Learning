@@ -19,7 +19,6 @@ class TaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: todo.completed ? Colors.greenAccent : null,
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       child: InkWell(
         onTap: onTap,

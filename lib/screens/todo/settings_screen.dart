@@ -15,7 +15,6 @@ class SettingsScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
         children: [
           Card(
             child: SwitchListTile(
@@ -36,7 +35,6 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 12),
           InkWell(
             onTap: () {
               Navigator.pushNamed(context, AppRouter.profile);

@@ -114,26 +114,32 @@ class _BottomSheetContentState extends ConsumerState<_BottomSheetContent> {
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    backgroundColor: isSaveButtonEnabled
-                        ? Colors.orangeAccent
-                        : Colors.grey,
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                  onPressed: isSaveButtonEnabled
-                      ? () {
-                    Navigator.pop(context);
-                    widget.onSave(
-                      widget.titleController.text.trim(),
-                      widget.descriptionController.text.trim(),
+                child: Builder(
+                  builder: (context) {
+                    final theme = Theme.of(context);
+                    final isDarkMode = theme.brightness == Brightness.dark;
+                    return ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: isDarkMode ? Colors.black : Colors.white,
+                        backgroundColor: isSaveButtonEnabled
+                            ? (isDarkMode ? Colors.white : Colors.orangeAccent)
+                            : Colors.grey,
+                        minimumSize: const Size(double.infinity, 50),
+                      ),
+                      onPressed: isSaveButtonEnabled
+                          ? () {
+                        Navigator.pop(context);
+                        widget.onSave(
+                          widget.titleController.text.trim(),
+                          widget.descriptionController.text.trim(),
+                        );
+                      }
+                          : null,
+                      child: const Text('Save',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
                     );
-                  }
-                      : null,
-                  child: Text('Save',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
+                  },
                 ),
               ),
             ),

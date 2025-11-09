@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-
 import '../../models/todo/todo_model.dart';
 import '../../providers/todo_provider.dart';
 
@@ -55,7 +54,9 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final completed = ref.watch(taskDetailsCompletedProvider);
-
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    
     return Scaffold(
       appBar: AppBar(title: const Text("Task Details")),
       body: Padding(
@@ -100,9 +101,7 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
           onPressed: _saveChanges,
           label: const Text("Save Changes"),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orangeAccent,
-            foregroundColor: Colors.black,
-            textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             minimumSize: const Size.fromHeight(50),
           ),
         ),
