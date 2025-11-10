@@ -73,7 +73,28 @@ class _TodoScreenState extends ConsumerState<TasksScreen> {
           key: Key(todo.id),
           direction: DismissDirection.endToStart,
           confirmDismiss: (direction) async {
-            return true;
+            final shouldDelete = await showCupertinoDialog<bool>(
+              context: context,
+              builder: (context) => CupertinoAlertDialog(
+                title: const Text('Delete Todo'),
+                content: const Text(
+                  'Are you sure you want to delete this task?',
+                ),
+                actions: [
+                  CupertinoDialogAction(
+                    isDestructiveAction: true,
+                    onPressed: () => Navigator.pop(context, true),
+                    child: const Text('Delete'),
+                  ),
+                  CupertinoDialogAction(
+                    isDefaultAction: true,
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text('Cancel'),
+                  ),
+                ],
+              ),
+            );
+            return shouldDelete ?? false;
           },
           background: Container(
             margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
