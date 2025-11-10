@@ -40,15 +40,26 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
     super.dispose();
   }
 
-  void _saveChanges() {
+  Future<void> _saveChanges() async {
     final completed = ref.read(taskDetailsCompletedProvider);
     final updated = widget.todo.copyWith(
       title: _titleController.text.trim(),
       description: _descriptionController.text.trim(),
       completed: completed,
     );
-    ref.read(todoNotifierProvider.notifier).updateTodo(updated);
-    Navigator.pop(context);
+    try {
+      await ref.read(todoNotifierProvider.notifier).updateTodo(updated);
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      // Optionally show a snackbar/toast to inform the user
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to save changes')),
+        );
+      }
+    }
   }
 
   @override
