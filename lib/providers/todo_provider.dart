@@ -27,28 +27,7 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
     // Since Hive box is guaranteed to be open from main(),
     // we can load synchronously without delays or retries.
     try {
-      final box = _box;
-      final List<Todo> todos = [];
-      
-      for (var key in box.keys) {
-        try {
-          final value = box.get(key);
-          if (value != null) {
-            final todo = Todo.fromMap(Map<String, dynamic>.from(value));
-            todos.add(todo);
-          }
-        } catch (e, stackTrace) {
-          // Log error for individual todo item but continue loading others
-          SecureErrorHandler.logError(
-            e,
-            context: 'Loading todo with key: $key',
-            stackTrace: stackTrace,
-          );
-          continue;
-        }
-      }
-      
-      state = todos;
+      state = _readTodosFromBox();
     } catch (e, stackTrace) {
       // Log critical error and initialize with empty state
       SecureErrorHandler.logError(
@@ -58,6 +37,31 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
       );
       state = [];
     }
+  }
+
+  List<Todo> _readTodosFromBox() {
+    final box = _box;
+    final List<Todo> todos = [];
+    
+    for (var key in box.keys) {
+      try {
+        final value = box.get(key);
+        if (value != null) {
+          final todo = Todo.fromMap(Map<String, dynamic>.from(value));
+          todos.add(todo);
+        }
+      } catch (e, stackTrace) {
+        // Log error for individual todo item but continue loading others
+        SecureErrorHandler.logError(
+          e,
+          context: 'Loading todo with key: $key',
+          stackTrace: stackTrace,
+        );
+        continue;
+      }
+    }
+    
+    return todos;
   }
 
   Future<void> addTodo(String title, String description) async {
