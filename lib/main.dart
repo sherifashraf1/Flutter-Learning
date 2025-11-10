@@ -14,8 +14,9 @@ void main() async {
   await dotenv.load(fileName: ".env");
   await Hive.initFlutter();
 
-  // Open the box before the app starts to ensure it's ready
+  // Open the boxes before the app starts to ensure they're ready
   await Hive.openBox('todosBox');
+  await Hive.openBox('auditLogsBox');
 
   try {
     final savedThemeMode = await AdaptiveTheme.getThemeMode();
