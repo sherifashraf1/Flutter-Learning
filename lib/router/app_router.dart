@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:profile_demo_app_with_flutter/screens/profile/profile_screen.dart';
+import '../models/todo/todo_model.dart';
+import '../screens/home/home_screen.dart';
 import '../screens/movies/movie_details_screen.dart';
 import '../screens/movies/movie_list_screen.dart';
+import '../screens/todo/settings_screen.dart';
+import '../screens/todo/task_details_screen.dart';
+import '../screens/todo/tasks_screen.dart';
 
 class AppRouter {
   // Route names
   static const moviesList = 'movies_list_screen';
   static const movieDetails = 'movie_details_screen';
+  static const homeScreen = "home_screen";
+  static const tasksList = 'tasks_list_screen';
+  static const taskDetails = 'task_details_screen';
+  static const settingsScreen = 'settings_screen';
+  static const profile = 'profile_screen';
 
   // Route generator
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -22,10 +33,26 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => _buildInvalidArgumentsScreen(),
         );
-      default:
+      case homeScreen:
+        return MaterialPageRoute(builder: (_) => HomeScreen());
+      case tasksList:
+        return MaterialPageRoute(builder: (_) => TasksScreen());
+      case taskDetails:
+        final todo = settings.arguments;
+        if (todo is Todo) {
+          return MaterialPageRoute(
+            builder: (_) => TaskDetailsScreen(todo: todo),
+          );
+        }
         return MaterialPageRoute(
-          builder: (_) => _buildRouteNotFoundScreen(),
+          builder: (_) => _buildInvalidArgumentsScreen(),
         );
+      case settingsScreen:
+        return MaterialPageRoute(builder: (_) => const SettingsScreen());
+      case profile:
+        return MaterialPageRoute(builder: (_) => ProfileScreen());
+      default:
+        return MaterialPageRoute(builder: (_) => _buildRouteNotFoundScreen());
     }
   }
 
@@ -47,7 +74,7 @@ class AppRouter {
                 const Icon(Icons.error_outline, color: Colors.red, size: 64),
                 const SizedBox(height: 16),
                 const Text(
-                  "Invalid Movie ID",
+                  "Invalid Argument",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -57,7 +84,7 @@ class AppRouter {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  "Movie ID is required to view details.",
+                  "Something went wrong.",
                   style: TextStyle(color: Colors.white70),
                   textAlign: TextAlign.center,
                 ),
@@ -70,10 +97,6 @@ class AppRouter {
   }
 
   static Widget _buildRouteNotFoundScreen() {
-    return Scaffold(
-      body: Center(
-        child: Text("Route not found"),
-      ),
-    );
+    return Scaffold(body: Center(child: Text("Route not found")));
   }
 }

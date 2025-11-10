@@ -6,33 +6,39 @@ class PersonalInformationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.onSecondary,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+            color: theme.colorScheme.primary,
+            blurRadius: 0.2,
+            offset: const Offset(0, 0.2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 8,
         children: [
-         const Text(
+         Text(
             "Personal Information",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+           style: TextStyle(fontWeight: FontWeight.bold,
+               fontSize: 20),
           ),
-          const SizedBox(),
+          const SizedBox(height: 16),
           _infoRow(context, "Email", userInfo.email),
+          const SizedBox(height: 8),
           _infoRow(context, "Gender", userInfo.gender),
+          const SizedBox(height: 8),
           _infoRow(context, "Birth Date", userInfo.formattedBirthDate()),
+          const SizedBox(height: 8),
           _infoRow(context, "Nationality", userInfo.nationality),
+          const SizedBox(height: 8),
           _infoRow(context, "Phone Number", userInfo.phoneNumber),
+          const SizedBox(height: 8),
           _infoRow(context, "Address", userInfo.address),
         ],
       ),
@@ -48,17 +54,16 @@ class PersonalInformationCard extends StatelessWidget {
             flex: 3,
             child: Text(
               title,
-              style: const TextStyle(color: Colors.grey, fontSize: 13),
+              style: TextStyle(fontSize: 13),
             ),
           ),
           Expanded(
             flex: 3,
             child: Text(
               subTitle,
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),

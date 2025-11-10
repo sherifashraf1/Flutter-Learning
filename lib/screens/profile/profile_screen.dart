@@ -11,8 +11,6 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("My Profile"),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
       ),
       body: LayoutBuilder(
         builder: (_, constraints) {
@@ -25,14 +23,7 @@ class ProfileScreen extends StatelessWidget {
             ],
           );
         },
-      ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
-          child: EditProfileButton(),
-        ),
-      ),
+      )
     );
   }
 }
