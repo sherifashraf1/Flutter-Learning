@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import '../../models/todo/todo_model.dart';
 import '../../providers/todo_provider.dart';
+import '../../services/audit/audit_log_service.dart';
 
 // Provider for task details completed state
 final taskDetailsCompletedProvider = StateProvider.autoDispose<bool>((ref) => false);
@@ -19,6 +20,7 @@ class TaskDetailsScreen extends ConsumerStatefulWidget {
 class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
+  final AuditLogService _auditLogService = AuditLogService();
 
   @override
   void initState() {
@@ -30,7 +32,27 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
     // Initialize completed state in provider
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(taskDetailsCompletedProvider.notifier).state = widget.todo.completed;
+      
+      // Audit log: read/view operation for task details
+      _auditLogService.logEvent(
+        action: 'read',
+        entityType: 'todo',
+        entityId: widget.todo.id,
+        userId: _getUserId(),
+        outcome: 'success',
+        metadata: {
+          'operation': 'view_details',
+          'title': widget.todo.title,
+        },
+      );
     });
+  }
+
+  /// Gets user identifier for audit logging
+  String _getUserId() {
+    // In a multi-user app, this would return the actual user ID
+    // For now, return system identifier
+    return 'system';
   }
 
   @override

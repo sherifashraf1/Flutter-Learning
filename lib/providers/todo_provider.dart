@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
@@ -27,7 +28,21 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
     // Since Hive box is guaranteed to be open from main(),
     // we can load synchronously without delays or retries.
     try {
-      state = _readTodosFromBox();
+      final todos = _readTodosFromBox();
+      state = todos;
+      
+      // Audit log: successful read/list operation
+      _auditLogService.logEvent(
+        action: 'read',
+        entityType: 'todo',
+        entityId: 'all',
+        userId: _getUserId(),
+        outcome: 'success',
+        metadata: {
+          'count': todos.length,
+          'operation': 'list',
+        },
+      );
     } catch (e, stackTrace) {
       // Log critical error and initialize with empty state
       SecureErrorHandler.logError(
@@ -36,6 +51,32 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
         stackTrace: stackTrace,
       );
       state = [];
+      
+      // Audit log: failed read/list operation
+      _auditLogService.logEvent(
+        action: 'read',
+        entityType: 'todo',
+        entityId: 'all',
+        userId: _getUserId(),
+        outcome: 'failure',
+        errorMessage: e.toString(),
+        metadata: {
+          'operation': 'list',
+        },
+      );
+    }
+  }
+
+  /// Gets user identifier for audit logging
+  /// In a multi-user app, this would return the actual user ID
+  /// For now, returns a system identifier with device info
+  String _getUserId() {
+    try {
+      // Add device/platform info for better audit trail
+      final platform = Platform.operatingSystem;
+      return 'system_$platform';
+    } catch (e) {
+      return 'system';
     }
   }
 
@@ -85,6 +126,7 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
         action: 'create',
         entityType: 'todo',
         entityId: todo.id,
+        userId: _getUserId(),
         outcome: 'success',
         metadata: {
           'title': title,
@@ -97,6 +139,7 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
         action: 'create',
         entityType: 'todo',
         entityId: 'unknown',
+        userId: _getUserId(),
         outcome: 'failure',
         errorMessage: e.toString(),
         metadata: {
@@ -124,6 +167,7 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
         action: 'update',
         entityType: 'todo',
         entityId: updatedTodo.id,
+        userId: _getUserId(),
         outcome: 'success',
         metadata: {
           'oldTitle': oldTodo.title,
@@ -140,6 +184,7 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
         action: 'update',
         entityType: 'todo',
         entityId: updatedTodo.id,
+        userId: _getUserId(),
         outcome: 'failure',
         errorMessage: e.toString(),
         metadata: {
@@ -164,6 +209,7 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
         action: 'delete',
         entityType: 'todo',
         entityId: id,
+        userId: _getUserId(),
         outcome: 'success',
         metadata: {
           'title': todo.title,
@@ -177,6 +223,7 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
         action: 'delete',
         entityType: 'todo',
         entityId: id,
+        userId: _getUserId(),
         outcome: 'failure',
         errorMessage: e.toString(),
       );
@@ -201,6 +248,7 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
         action: 'toggle',
         entityType: 'todo',
         entityId: id,
+        userId: _getUserId(),
         outcome: 'success',
         metadata: {
           'title': todo.title,
@@ -214,6 +262,7 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
         action: 'toggle',
         entityType: 'todo',
         entityId: id,
+        userId: _getUserId(),
         outcome: 'failure',
         errorMessage: e.toString(),
       );
