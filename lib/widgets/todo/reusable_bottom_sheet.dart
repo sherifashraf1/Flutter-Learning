@@ -20,7 +20,6 @@ void showReusableBottomSheet({
 }) {
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
-  final hasExistingContent = false;
 
   showModalBottomSheet(
     context: context,
@@ -29,7 +28,6 @@ void showReusableBottomSheet({
       title: title,
       titleController: titleController,
       descriptionController: descriptionController,
-      isSaveButtonEnabled: hasExistingContent,
       onSave: onSave,
       titleLabel: titleLabel,
       descriptionLabel: descriptionLabel,
@@ -45,7 +43,6 @@ class _BottomSheetContent extends ConsumerStatefulWidget {
   final String title;
   final TextEditingController titleController;
   final TextEditingController descriptionController;
-  final bool isSaveButtonEnabled;
   final void Function(String title, String description) onSave;
   // Customizable texts
   final String? titleLabel;
@@ -61,7 +58,6 @@ class _BottomSheetContent extends ConsumerStatefulWidget {
     required this.title,
     required this.titleController,
     required this.descriptionController,
-    required this.isSaveButtonEnabled,
     required this.onSave,
     this.titleLabel,
     this.descriptionLabel,
@@ -78,10 +74,10 @@ class _BottomSheetContent extends ConsumerStatefulWidget {
 class _BottomSheetContentState extends ConsumerState<_BottomSheetContent> {
   @override
   Widget build(BuildContext context) {
-    final isSaveButtonEnabled = ref.watch(bottomSheetButtonEnabledProvider(widget.isSaveButtonEnabled));
+    final isSaveButtonEnabled = ref.watch(bottomSheetButtonEnabledProvider(false));
 
     void updateButtonState() {
-      ref.read(bottomSheetButtonEnabledProvider(widget.isSaveButtonEnabled).notifier).state =
+      ref.read(bottomSheetButtonEnabledProvider(false).notifier).state =
           widget.titleController.text.trim().isNotEmpty ||
               widget.descriptionController.text.trim().isNotEmpty;
     }
