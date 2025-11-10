@@ -46,9 +46,14 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
     for (var key in box.keys) {
       try {
         final value = box.get(key);
-        if (value != null) {
+        if (value is Map) {
           final todo = Todo.fromMap(Map<String, dynamic>.from(value));
           todos.add(todo);
+        } else if (value != null) {
+          SecureErrorHandler.logError(
+            'Unexpected todo value type: ${value.runtimeType}',
+            context: 'Loading todo with key: $key',
+          );
         }
       } catch (e, stackTrace) {
         // Log error for individual todo item but continue loading others
