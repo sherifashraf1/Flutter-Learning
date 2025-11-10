@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
-final bottomSheetButtonEnabledProvider = StateProvider.autoDispose.family<bool, bool>((ref, initialValue) => initialValue);
+final bottomSheetButtonEnabledProvider = StateProvider.autoDispose<bool>((ref) => false);
 
 void showReusableBottomSheet({
   required BuildContext context,
@@ -74,12 +74,12 @@ class _BottomSheetContent extends ConsumerStatefulWidget {
 class _BottomSheetContentState extends ConsumerState<_BottomSheetContent> {
   @override
   Widget build(BuildContext context) {
-    final isSaveButtonEnabled = ref.watch(bottomSheetButtonEnabledProvider(false));
+    final isSaveButtonEnabled = ref.watch(bottomSheetButtonEnabledProvider);
 
     void updateButtonState() {
-      ref.read(bottomSheetButtonEnabledProvider(false).notifier).state =
+      ref.read(bottomSheetButtonEnabledProvider.notifier).state =
           widget.titleController.text.trim().isNotEmpty ||
-              widget.descriptionController.text.trim().isNotEmpty;
+          widget.descriptionController.text.trim().isNotEmpty;
     }
 
     final defaultTitleStyle = widget.titleTextStyle ??
