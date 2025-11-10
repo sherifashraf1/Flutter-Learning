@@ -23,13 +23,12 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
     _loadTodos();
   }
 
-  Future<void> _loadTodos() async {
+  void _loadTodos() {
+    // Since Hive box is guaranteed to be open from main(),
+    // we can load synchronously without delays or retries.
     try {
-      // Wait a bit to ensure box is ready
-      await Future.delayed(const Duration(milliseconds: 50));
       final box = _box;
       final List<Todo> todos = [];
-      final List<String> failedKeys = [];
       
       for (var key in box.keys) {
         try {
@@ -39,105 +38,25 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
             todos.add(todo);
           }
         } catch (e, stackTrace) {
-          // Log error for individual todo item with context
-          failedKeys.add(key.toString());
+          // Log error for individual todo item but continue loading others
           SecureErrorHandler.logError(
             e,
             context: 'Loading todo with key: $key',
             stackTrace: stackTrace,
           );
-          // Continue loading other todos even if one fails
           continue;
         }
       }
-
-      // Log summary if any items failed to load
-      if (failedKeys.isNotEmpty) {
-        SecureErrorHandler.logError(
-          'Failed to load ${failedKeys.length} todo(s)',
-          context: '_loadTodos - initial attempt',
-        );
-        if (kDebugMode) {
-          debugPrint('Failed todo keys: $failedKeys');
-        }
-      }
-
+      
       state = todos;
     } catch (e, stackTrace) {
-      // Log the initial error with full context
+      // Log critical error and initialize with empty state
       SecureErrorHandler.logError(
         e,
-        context: '_loadTodos - initial attempt failed, retrying...',
+        context: '_loadTodos - failed to load todos',
         stackTrace: stackTrace,
       );
-      
-      // Retry after a delay with diagnostics
-      await Future.delayed(const Duration(milliseconds: 200));
-      
-      try {
-        final box = _box;
-        final List<Todo> todos = [];
-        final List<String> failedKeys = [];
-        
-        for (var key in box.keys) {
-          try {
-            final value = box.get(key);
-            if (value != null) {
-              final todo = Todo.fromMap(Map<String, dynamic>.from(value));
-              todos.add(todo);
-            }
-          } catch (e, stackTrace) {
-            // Log error for individual todo item in retry
-            failedKeys.add(key.toString());
-            SecureErrorHandler.logError(
-              e,
-              context: 'Loading todo with key: $key (retry attempt)',
-              stackTrace: stackTrace,
-            );
-            continue;
-          }
-        }
-        
-        // Log retry summary
-        if (failedKeys.isNotEmpty) {
-          SecureErrorHandler.logError(
-            'Retry: Failed to load ${failedKeys.length} todo(s)',
-            context: '_loadTodos - retry attempt',
-          );
-          if (kDebugMode) {
-            debugPrint('Failed todo keys on retry: $failedKeys');
-          }
-        } else {
-          if (kDebugMode) {
-            debugPrint('Retry successful: Loaded ${todos.length} todos');
-          }
-        }
-        
-        state = todos;
-      } catch (e2, stackTrace2) {
-        // Log final failure with full context
-        SecureErrorHandler.logError(
-          e2,
-          context: '_loadTodos - retry attempt also failed, initializing empty state',
-          stackTrace: stackTrace2,
-        );
-        
-        // Gracefully degrade to empty state
-        state = [];
-        
-        // Log audit event for critical failure
-        await _auditLogService.logEvent(
-          action: 'load',
-          entityType: 'todo',
-          entityId: 'all',
-          outcome: 'failure',
-          errorMessage: 'Failed to load todos after retry: ${e2.toString()}',
-          metadata: {
-            'initialError': e.toString(),
-            'retryError': e2.toString(),
-          },
-        );
-      }
+      state = [];
     }
   }
 
