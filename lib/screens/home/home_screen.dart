@@ -10,7 +10,10 @@ class HomeScreen extends StatelessWidget {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        body: const TabBarView(children: [TasksScreen(), SettingsScreen()]),
+        body: const TabBarView(
+          physics: NeverScrollableScrollPhysics(),
+          children: [TasksScreen(), SettingsScreen()],
+        ),
         bottomNavigationBar: TabBar(
           tabs: const [
             Tab(icon: Icon(Icons.home), text: "Home"),
