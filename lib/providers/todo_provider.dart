@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/todo/todo_model.dart';
 import '../services/audit/audit_log_service.dart';
+import '../utils/secure_error_handler.dart';
 
 final todoNotifierProvider = StateNotifierProvider<TodoNotifier, List<Todo>>((ref) {
   return TodoNotifier();
@@ -27,6 +29,8 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
       await Future.delayed(const Duration(milliseconds: 50));
       final box = _box;
       final List<Todo> todos = [];
+      final List<String> failedKeys = [];
+      
       for (var key in box.keys) {
         try {
           final value = box.get(key);
@@ -34,18 +38,47 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
             final todo = Todo.fromMap(Map<String, dynamic>.from(value));
             todos.add(todo);
           }
-        } catch (e) {
+        } catch (e, stackTrace) {
+          // Log error for individual todo item with context
+          failedKeys.add(key.toString());
+          SecureErrorHandler.logError(
+            e,
+            context: 'Loading todo with key: $key',
+            stackTrace: stackTrace,
+          );
+          // Continue loading other todos even if one fails
           continue;
         }
       }
 
+      // Log summary if any items failed to load
+      if (failedKeys.isNotEmpty) {
+        SecureErrorHandler.logError(
+          'Failed to load ${failedKeys.length} todo(s)',
+          context: '_loadTodos - initial attempt',
+        );
+        if (kDebugMode) {
+          debugPrint('Failed todo keys: $failedKeys');
+        }
+      }
+
       state = todos;
-    } catch (e) {
-      // Retry after a delay
+    } catch (e, stackTrace) {
+      // Log the initial error with full context
+      SecureErrorHandler.logError(
+        e,
+        context: '_loadTodos - initial attempt failed, retrying...',
+        stackTrace: stackTrace,
+      );
+      
+      // Retry after a delay with diagnostics
       await Future.delayed(const Duration(milliseconds: 200));
+      
       try {
         final box = _box;
         final List<Todo> todos = [];
+        final List<String> failedKeys = [];
+        
         for (var key in box.keys) {
           try {
             final value = box.get(key);
@@ -53,13 +86,57 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
               final todo = Todo.fromMap(Map<String, dynamic>.from(value));
               todos.add(todo);
             }
-          } catch (e) {
+          } catch (e, stackTrace) {
+            // Log error for individual todo item in retry
+            failedKeys.add(key.toString());
+            SecureErrorHandler.logError(
+              e,
+              context: 'Loading todo with key: $key (retry attempt)',
+              stackTrace: stackTrace,
+            );
             continue;
           }
         }
+        
+        // Log retry summary
+        if (failedKeys.isNotEmpty) {
+          SecureErrorHandler.logError(
+            'Retry: Failed to load ${failedKeys.length} todo(s)',
+            context: '_loadTodos - retry attempt',
+          );
+          if (kDebugMode) {
+            debugPrint('Failed todo keys on retry: $failedKeys');
+          }
+        } else {
+          if (kDebugMode) {
+            debugPrint('Retry successful: Loaded ${todos.length} todos');
+          }
+        }
+        
         state = todos;
-      } catch (e2) {
+      } catch (e2, stackTrace2) {
+        // Log final failure with full context
+        SecureErrorHandler.logError(
+          e2,
+          context: '_loadTodos - retry attempt also failed, initializing empty state',
+          stackTrace: stackTrace2,
+        );
+        
+        // Gracefully degrade to empty state
         state = [];
+        
+        // Log audit event for critical failure
+        await _auditLogService.logEvent(
+          action: 'load',
+          entityType: 'todo',
+          entityId: 'all',
+          outcome: 'failure',
+          errorMessage: 'Failed to load todos after retry: ${e2.toString()}',
+          metadata: {
+            'initialError': e.toString(),
+            'retryError': e2.toString(),
+          },
+        );
       }
     }
   }
