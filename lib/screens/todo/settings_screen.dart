@@ -42,9 +42,9 @@ class SettingsScreen extends StatelessWidget {
             child: Card(
               child: Padding(padding: EdgeInsets.all(16),
                 child: Row(
-                  spacing: 8,
-                  children: [
+                  children: const [
                     Icon(Icons.person),
+                    SizedBox(width: 8),
                     Text("Profile", style: TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 16),)
                   ],
