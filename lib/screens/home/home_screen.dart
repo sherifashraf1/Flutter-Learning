@@ -7,17 +7,17 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const DefaultTabController(
+    return DefaultTabController(
       length: 2,
       child: Scaffold(
-        body: TabBarView(children: [TasksScreen(), SettingsScreen()]),
+        body: const TabBarView(children: [TasksScreen(), SettingsScreen()]),
         bottomNavigationBar: TabBar(
-          tabs: [
+          tabs: const [
             Tab(icon: Icon(Icons.home), text: "Home"),
             Tab(icon: Icon(Icons.settings), text: "Settings"),
           ],
-          labelColor: Colors.blue,
-          unselectedLabelColor: Colors.grey,
+          labelColor: Theme.of(context).colorScheme.primary,
+          unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
           indicatorColor: Colors.transparent,
         ),
       ),
