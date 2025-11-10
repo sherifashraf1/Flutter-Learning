@@ -1,5 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../models/audit/audit_log_model.dart';
+import '../../utils/secure_error_handler.dart';
 
 class AuditLogService {
   static const String _boxName = 'auditLogsBox';
@@ -34,10 +35,14 @@ class AuditLogService {
       );
 
       await _box.put(auditLog.id, auditLog.toMap());
-    } catch (e) {
+    } catch (e, stackTrace) {
       // Silently fail audit logging to not break the main functionality
       // In production, you might want to log this to a remote service
-      print('Failed to log audit event: $e');
+      SecureErrorHandler.logError(
+        e,
+        context: 'logEvent - failed to log audit event',
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -99,8 +104,12 @@ class AuditLogService {
       for (var key in keysToDelete) {
         await _box.delete(key);
       }
-    } catch (e) {
-      print('Failed to clear old audit logs: $e');
+    } catch (e, stackTrace) {
+      SecureErrorHandler.logError(
+        e,
+        context: 'clearOldLogs - failed to clear old audit logs',
+        stackTrace: stackTrace,
+      );
     }
   }
 }
