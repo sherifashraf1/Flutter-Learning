@@ -96,14 +96,14 @@ class _TaskDetailsScreenState extends ConsumerState<TaskDetailsScreen> {
         ),
       ),
       bottomNavigationBar: SafeArea(
-        minimum: EdgeInsets.all(20),
-        child: ElevatedButton.icon(
+        minimum: const EdgeInsets.all(20),
+        child: ElevatedButton(
           onPressed: _saveChanges,
-          label: const Text("Save Changes"),
           style: ElevatedButton.styleFrom(
             textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             minimumSize: const Size.fromHeight(50),
           ),
+          child: const Text("Save Changes"),
         ),
       ),
     );
