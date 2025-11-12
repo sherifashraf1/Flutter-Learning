@@ -43,6 +43,7 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   adaptive_theme: ^3.7.2
+  flutter_html: ^3.0.0-beta.2
   firebase_core:
   firebase_auth:
 dev_dependencies:
