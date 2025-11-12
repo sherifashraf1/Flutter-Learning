@@ -18,8 +18,8 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   // Form key and controllers
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _emailController;
-  late final TextEditingController _passwordController;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   // Validation state
   String? _emailError;
@@ -27,8 +27,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _obscurePassword = true;
 
   // Focus nodes
-  late final FocusNode _emailFocusNode;
-  late final FocusNode _passwordFocusNode;
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
 
   // Constants
   static const double _logoWidthFactor = 0.4;
@@ -40,21 +40,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeControllers();
-    _initializeFocusNodes();
     _setupValidationListeners();
     _setupFocusListeners();
     _unfocusOnInit();
-  }
-
-  void _initializeControllers() {
-    _emailController = TextEditingController();
-    _passwordController = TextEditingController();
-  }
-
-  void _initializeFocusNodes() {
-    _emailFocusNode = FocusNode();
-    _passwordFocusNode = FocusNode();
   }
 
   void _setupValidationListeners() {
