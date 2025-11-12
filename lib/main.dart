@@ -1,8 +1,10 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:profile_demo_app_with_flutter/firebase_options.dart';
 import 'package:profile_demo_app_with_flutter/router/app_router.dart';
 import 'package:profile_demo_app_with_flutter/widgets/todo/keyboard_dismisser.dart';
 import 'package:profile_demo_app_with_flutter/theme/app_theme.dart';
@@ -10,7 +12,7 @@ import 'package:profile_demo_app_with_flutter/theme/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   AdaptiveThemeMode currentThemeMode = AdaptiveThemeMode.light;
-
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await dotenv.load(fileName: ".env");
   await Hive.initFlutter();
 
@@ -44,7 +46,7 @@ class MyApp extends StatelessWidget {
         theme: theme,
         darkTheme: darkTheme,
         debugShowCheckedModeBanner: false,
-        initialRoute: AppRouter.homeScreen,
+        initialRoute: AppRouter.loginScreen,
         onGenerateRoute: AppRouter.generateRoute,
         builder: (context, child) {
           return KeyboardDismisser(child: child!);
