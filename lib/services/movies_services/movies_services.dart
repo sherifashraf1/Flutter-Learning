@@ -9,7 +9,7 @@ import '../../models/movies_models/movie_model.dart';
 import '../../models/movies_models/movie_credits_model.dart';
 
 class MoviesService {
-  final String? baseUrl = dotenv.env['BASE_URL'];
+  final String? baseUrl = dotenv.env['MOVIES_BASE_URL'];
   final String? apiKey = dotenv.env['API_KEY'];
 
   Uri _buildUri(String path, [Map<String, String>? params]) {
