@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../shared/empty_state/data_state.dart';
 import '../shared-enums/shared_enums.dart';
 import '../services/firebase_services/firebase_services.dart';
@@ -18,6 +19,8 @@ class LoginNotifier extends StateNotifier<DataState<void>> {
 
     try {
       await FirebaseServices.signIn(email.trim(), password.trim());
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString("email", email);
       state = DataState.success(null);
     } catch (e) {
       SecureErrorHandler.logError(e, context: 'login');

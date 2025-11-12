@@ -5,6 +5,7 @@ import 'package:profile_demo_app_with_flutter/screens/auth/registration_screen.d
 import 'package:profile_demo_app_with_flutter/screens/firebase/book_details_screen.dart';
 import 'package:profile_demo_app_with_flutter/screens/firebase/book_list_screen.dart';
 import 'package:profile_demo_app_with_flutter/screens/profile/profile_screen.dart';
+import 'package:profile_demo_app_with_flutter/screens/splash/splash_screen.dart';
 import '../models/todo/todo_model.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/movies/movie_details_screen.dart';
@@ -15,6 +16,7 @@ import '../screens/todo/tasks_screen.dart';
 
 class AppRouter {
   // Route names
+  static const splashScreen = "splash_screen";
   static const loginScreen = "login_screen";
   static const registerScreen = "register_screen";
   static const forgetPasswordScreen = "forget_password_screen";
@@ -31,6 +33,8 @@ class AppRouter {
   // Route generator
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case splashScreen:
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
       case loginScreen:
         return MaterialPageRoute(builder: (_) => const LoginScreen());
       case registerScreen:

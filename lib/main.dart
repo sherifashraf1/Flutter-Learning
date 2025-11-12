@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
         theme: theme,
         darkTheme: darkTheme,
         debugShowCheckedModeBanner: false,
-        initialRoute: AppRouter.loginScreen,
+        initialRoute: AppRouter.splashScreen,
         onGenerateRoute: AppRouter.generateRoute,
         builder: (context, child) {
           return KeyboardDismisser(child: child!);
