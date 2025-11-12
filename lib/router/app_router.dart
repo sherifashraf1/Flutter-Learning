@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:profile_demo_app_with_flutter/screens/auth/foget_password_screen.dart';
+import 'package:profile_demo_app_with_flutter/screens/auth/login_screen.dart';
+import 'package:profile_demo_app_with_flutter/screens/auth/registration_screen.dart';
+import 'package:profile_demo_app_with_flutter/screens/firebase/book_list_screen.dart';
 import 'package:profile_demo_app_with_flutter/screens/profile/profile_screen.dart';
 import '../models/todo/todo_model.dart';
 import '../screens/home/home_screen.dart';
@@ -10,9 +14,13 @@ import '../screens/todo/tasks_screen.dart';
 
 class AppRouter {
   // Route names
+  static const loginScreen = "login_screen";
+  static const registerScreen = "register_screen";
+  static const forgetPasswordScreen = "forget_password_screen";
   static const moviesList = 'movies_list_screen';
   static const movieDetails = 'movie_details_screen';
   static const homeScreen = "home_screen";
+  static const booksListScreen = "books_list_screen";
   static const tasksList = 'tasks_list_screen';
   static const taskDetails = 'task_details_screen';
   static const settingsScreen = 'settings_screen';
@@ -21,6 +29,12 @@ class AppRouter {
   // Route generator
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case loginScreen:
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
+      case registerScreen:
+        return MaterialPageRoute(builder: (_) => const RegistrationScreen());
+      case forgetPasswordScreen:
+        return MaterialPageRoute(builder: (_) => const ForgetPasswordScreen());
       case moviesList:
         return MaterialPageRoute(builder: (_) => const MoviesListScreen());
       case movieDetails:
@@ -35,6 +49,8 @@ class AppRouter {
         );
       case homeScreen:
         return MaterialPageRoute(builder: (_) => HomeScreen());
+      case booksListScreen:
+        return MaterialPageRoute(builder: (_) => BookListScreen());
       case tasksList:
         return MaterialPageRoute(builder: (_) => TasksScreen());
       case taskDetails:
