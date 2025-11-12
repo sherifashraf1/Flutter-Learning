@@ -43,23 +43,9 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeControllers();
-    _initializeFocusNodes();
     _setupValidationListeners();
     _setupFocusListeners();
     _unfocusOnInit();
-  }
-
-  void _initializeControllers() {
-    _emailController = TextEditingController();
-    _passwordController = TextEditingController();
-    _confirmPasswordController = TextEditingController();
-  }
-
-  void _initializeFocusNodes() {
-    _emailFocusNode = FocusNode();
-    _passwordFocusNode = FocusNode();
-    _confirmPasswordFocusNode = FocusNode();
   }
 
   void _setupValidationListeners() {
