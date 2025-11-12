@@ -1,9 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:profile_demo_app_with_flutter/router/app_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  bool _isLoggedIn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString("email");
+    setState(() {
+      _isLoggedIn = email != null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,40 +57,60 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
           ),
-          InkWell(
-            onTap: () {
-              Navigator.pushNamed(context, AppRouter.profile);
-            },
-            child: Card(
-              child: Padding(padding: EdgeInsets.all(16),
-                child: Row(
-                  children: const [
-                    Icon(Icons.person),
-                    SizedBox(width: 8),
-                    Text("Profile", style: TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),)
-                  ],
+          
+          // Show Profile only if user is logged in
+          if (_isLoggedIn)
+            InkWell(
+              onTap: () {
+                Navigator.pushNamed(context, AppRouter.profile);
+              },
+              child: Card(
+                child: Padding(padding: EdgeInsets.all(16),
+                  child: Row(
+                    children: const [
+                      Icon(Icons.person),
+                      SizedBox(width: 8),
+                      Text("Profile", style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16),)
+                    ],
+                  ),
                 ),
               ),
-
             ),
-          ),
+
+          // Show Logout if logged in, Login if not logged in
           InkWell(
-            onTap: () {
-              Navigator.pushNamedAndRemoveUntil(context, AppRouter.loginScreen,  (route) => false,);
+            onTap: () async {
+              if (_isLoggedIn) {
+                // Logout
+                final prefs = await SharedPreferences.getInstance();
+                prefs.remove("email");
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRouter.loginScreen,
+                  (route) => false,
+                );
+              } else {
+                // Login
+                Navigator.pushNamed(context, AppRouter.loginScreen);
+              }
             },
             child: Card(
               child: Padding(padding: EdgeInsets.all(16),
                 child: Row(
-                  children: const [
-                    Icon(Icons.logout),
-                    SizedBox(width: 8),
-                    Text("Logout", style: TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),)
+                  children: [
+                    Icon(_isLoggedIn ? Icons.logout : Icons.login),
+                    const SizedBox(width: 8),
+                    Text(
+                      _isLoggedIn ? "Logout" : "Login",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    )
                   ],
                 ),
               ),
-
             ),
           )
         ],
