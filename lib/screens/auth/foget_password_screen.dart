@@ -16,100 +16,122 @@ class ForgetPasswordScreen extends ConsumerStatefulWidget {
 }
 
 class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
-  TextEditingController emailController = TextEditingController();
-  final FocusNode _emailFocusNode = FocusNode();
+  // Form controller
+  late final TextEditingController _emailController;
 
+  // Validation state
   String? _emailError;
-  bool _hasAttemptedValidation = false;
+
+  // Focus node
+  late final FocusNode _emailFocusNode;
+
+  // Constants
+  static const double _logoWidthFactor = 0.4;
+  static const double _logoHeightFactor = 0.13;
+  static const double _horizontalPadding = 24.0;
+  static const double _verticalSpacing = 16.0;
+  static const double _sectionSpacing = 24.0;
 
   @override
   void initState() {
     super.initState();
-    // Clear errors when screen is opened, especially if field is empty
-    if (emailController.text.isEmpty) {
-      _emailError = null;
-    }
-    _hasAttemptedValidation = false;
-    // Add listener for real-time validation
-    emailController.addListener(_validateEmail);
-    // Clear errors when field gets focus
+    _initializeController();
+    _initializeFocusNode();
+    _setupValidationListener();
+    _setupFocusListener();
+    _unfocusOnInit();
+  }
+
+  void _initializeController() {
+    _emailController = TextEditingController();
+  }
+
+  void _initializeFocusNode() {
+    _emailFocusNode = FocusNode();
+  }
+
+  void _setupValidationListener() {
+    _emailController.addListener(_validateEmail);
+  }
+
+  void _setupFocusListener() {
     _emailFocusNode.addListener(() {
       if (_emailFocusNode.hasFocus) {
-        setState(() {
-          _emailError = null;
-        });
+        setState(() => _emailError = null);
       }
     });
-    // Unfocus any fields when screen is opened and clear errors if field is empty
+  }
+
+  void _unfocusOnInit() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _emailFocusNode.unfocus();
-      FocusScope.of(context).unfocus();
-      // Clear error if field is empty after navigation
-      if (emailController.text.isEmpty && _emailError != null) {
-        setState(() {
-          _emailError = null;
-        });
-      }
+      _unfocusAllFields();
+      _clearErrorsIfFieldEmpty();
     });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Unfocus fields when route becomes inactive (navigating away)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final route = ModalRoute.of(context);
       if (route != null && !route.isCurrent) {
-        _emailFocusNode.unfocus();
-        FocusScope.of(context).unfocus();
-        // Clear error if field is empty when navigating away
-        if (emailController.text.isEmpty && _emailError != null) {
-          setState(() {
-            _emailError = null;
-          });
-        }
+        _unfocusAllFields();
+        _clearErrorsIfFieldEmpty();
       }
     });
   }
 
   @override
   void dispose() {
-    // Unfocus field before disposing
-    _emailFocusNode.unfocus();
-    // Remove listener before disposing
-    emailController.removeListener(_validateEmail);
-    emailController.dispose();
+    _unfocusAllFields();
+    _emailController.removeListener(_validateEmail);
+    _emailController.dispose();
     _emailFocusNode.dispose();
     super.dispose();
   }
 
+  // Validation methods
   void _validateEmail() {
     setState(() {
-      _emailError = ValidationManager.email(emailController.text);
+      _emailError = ValidationManager.email(_emailController.text);
     });
   }
 
-  void _handleResetPassword() {
+  void _validateAllFields() {
     setState(() {
-      _hasAttemptedValidation = true;
-      _emailError = ValidationManager.email(emailController.text);
+      _emailError = ValidationManager.email(_emailController.text);
     });
-    
-    if (_emailError == null) {
-      ref
-          .read(resetPasswordStateProvider.notifier)
-          .resetPassword(emailController.text);
+  }
+
+  bool get _isFormValid => _emailError == null;
+
+  // Helper methods
+  void _unfocusAllFields() {
+    _emailFocusNode.unfocus();
+    FocusScope.of(context).unfocus();
+  }
+
+  void _clearErrorsIfFieldEmpty() {
+    if (_emailController.text.isEmpty && _emailError != null) {
+      setState(() => _emailError = null);
+    }
+  }
+
+  // Action handlers
+  void _handleResetPassword() {
+    _validateAllFields();
+    if (_isFormValid) {
+      ref.read(resetPasswordStateProvider.notifier).resetPassword(
+            _emailController.text.trim(),
+          );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final resetPasswordState = ref.watch(resetPasswordStateProvider);
-    final isLoading = resetPasswordState.state == ViewState.loading;
 
-    // Listen to state changes and handle UI side effects
     ref.listen<DataState<void>>(resetPasswordStateProvider, (previous, next) {
-      // Handle success state - show success snackbar
       if (next.state == ViewState.success &&
           previous?.state != ViewState.success) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -126,62 +148,85 @@ class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
       body: SafeArea(
         child: DataStateWidget<void>(
           dataState: resetPasswordState,
-          childBuilder: (_) => _buildResetPasswordForm(isLoading),
-        ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(16),
-        child: ElevatedButton(
-          onPressed: isLoading ? null : _handleResetPassword,
-          child: const Text("Confirm"),
+          childBuilder: (_) => _buildResetPasswordForm(),
         ),
       ),
     );
   }
 
-  Widget _buildResetPasswordForm(bool isLoading) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+  Widget _buildResetPasswordForm() {
+    final size = MediaQuery.of(context).size;
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-
-          Theme.of(context).brightness == Brightness.dark
-              ? ColorFiltered(
-            colorFilter: const ColorFilter.mode(
-              Colors.white,
-              BlendMode.srcIn,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: _horizontalPadding),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: IntrinsicHeight(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(height: size.height * 0.05),
+                  _buildLogo(size),
+                  SizedBox(height: _sectionSpacing * 1.5),
+                  _buildEmailField(),
+                  const Spacer(),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: _sectionSpacing,
+                      bottom: _horizontalPadding,
+                    ),
+                    child: _buildConfirmButton(),
+                  ),
+                ],
+              ),
             ),
-            child: Image.asset(
-              'assets/images/logo.png',
-              width: screenWidth * 0.4,
-              height: screenHeight * 0.13,
-              fit: BoxFit.contain,
-            ),
-          )
-              : Image.asset(
-            'assets/images/logo.png',
-            width: screenWidth * 0.4,
-            height: screenHeight * 0.13,
-            fit: BoxFit.contain,
           ),
+        );
+      },
+    );
+  }
 
-          const SizedBox(height: 16),
+  Widget _buildLogo(Size size) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final logo = Image.asset(
+      'assets/images/logo.png',
+      width: size.width * _logoWidthFactor,
+      height: size.height * _logoHeightFactor,
+      fit: BoxFit.contain,
+    );
 
-          AppTextFormFieldWidget(
-            label: "Email",
-            controller: emailController,
-            focusNode: _emailFocusNode,
-            prefixIcon: const Icon(Icons.email),
-            errorText: _emailError,
-            validator: ValidationManager.email,
-          ),
+    return Center(
+      child: isDark
+          ? ColorFiltered(
+              colorFilter: const ColorFilter.mode(
+                Colors.white,
+                BlendMode.srcIn,
+              ),
+              child: logo,
+            )
+          : logo,
+    );
+  }
 
-        ],
-        ),
+  Widget _buildEmailField() {
+    return AppTextFormFieldWidget(
+      label: "Email",
+      controller: _emailController,
+      focusNode: _emailFocusNode,
+      prefixIcon: const Icon(Icons.email_outlined),
+      errorText: _emailError,
+      validator: ValidationManager.email,
+    );
+  }
+
+  Widget _buildConfirmButton() {
+    return SizedBox(
+      height: 50,
+      child: ElevatedButton(
+        onPressed: _handleResetPassword,
+        child: const Text("Confirm"),
       ),
     );
   }
