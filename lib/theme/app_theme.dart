@@ -72,7 +72,13 @@ class AppTheme {
           backgroundColor: AppColors.primaryTeal,
           foregroundColor: AppColors.onError,
           elevation: 2,
+          shadowColor: Colors.black.withOpacity(0.2),
+          surfaceTintColor: Colors.transparent,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          textStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -186,7 +192,13 @@ class AppTheme {
           backgroundColor: AppColors.accentGreen,
           foregroundColor: AppColors.darkBackground,
           elevation: 2,
+          shadowColor: Colors.black.withOpacity(0.2),
+          surfaceTintColor: Colors.transparent,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          textStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
