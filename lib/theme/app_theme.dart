@@ -98,6 +98,24 @@ class AppTheme {
         thickness: 1,
         space: 1,
       ),
+        extensions: [
+          AppBoxTheme(
+            card: BoxDecoration(
+              border: Border.all(color: Colors.black, width: 1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            gradientBackground: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.primaryTeal,
+                  AppColors.accentGreen.withOpacity(0.8),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+        ]
     );
   }
 
@@ -194,7 +212,53 @@ class AppTheme {
         thickness: 1,
         space: 1,
       ),
+
+      extensions: [
+        AppBoxTheme(
+          card: BoxDecoration(
+            border: Border.all(color: Colors.greenAccent, width: 2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          gradientBackground: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.accentGreen,
+                AppColors.primaryTeal.withOpacity(0.7),
+              ],
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
 
+class AppBoxTheme extends ThemeExtension<AppBoxTheme> {
+  final BoxDecoration card;
+  final BoxDecoration gradientBackground;
+
+  AppBoxTheme({
+    required this.card,
+    required this.gradientBackground,
+  });
+
+  @override
+  AppBoxTheme copyWith({
+    BoxDecoration? card,
+    BoxDecoration? gradientBackground,
+  }) {
+    return AppBoxTheme(
+      card: card ?? this.card,
+      gradientBackground: gradientBackground ?? this.gradientBackground,
+    );
+  }
+
+  @override
+  AppBoxTheme lerp(ThemeExtension<AppBoxTheme>? other, double t) {
+    if (other is! AppBoxTheme) return this;
+    return this;
+  }
+
+}
