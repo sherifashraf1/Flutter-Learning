@@ -52,6 +52,24 @@ class SettingsScreen extends StatelessWidget {
               ),
 
             ),
+          ),
+          InkWell(
+            onTap: () {
+              Navigator.pushNamedAndRemoveUntil(context, AppRouter.loginScreen,  (route) => false,);
+            },
+            child: Card(
+              child: Padding(padding: EdgeInsets.all(16),
+                child: Row(
+                  children: const [
+                    Icon(Icons.logout),
+                    SizedBox(width: 8),
+                    Text("Logout", style: TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),)
+                  ],
+                ),
+              ),
+
+            ),
           )
         ],
       ),
