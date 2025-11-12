@@ -46,6 +46,7 @@ dependencies:
   flutter_html: ^3.0.0-beta.2
   firebase_core:
   firebase_auth:
+  shared_preferences: ^2.5.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
