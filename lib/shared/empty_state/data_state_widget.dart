@@ -56,7 +56,7 @@ class _DataStateWidgetState<T> extends State<DataStateWidget<T>> {
                   ),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('OK'),
+                  child: const Text('Cancel'),
                 ),
               ],
             ),
