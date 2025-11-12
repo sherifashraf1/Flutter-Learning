@@ -41,7 +41,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       // Handle success state - navigate to home
       if (next.state == ViewState.success &&
           previous?.state != ViewState.success) {
-       print("should show home screen");
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AppRouter.homeScreen,
+          (route) => false,
+        );
       }
     });
 
@@ -75,7 +79,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             alignment: Alignment.centerRight,
             child: TextButton(
               onPressed: () {
-                print("should show forget password screen");
+                Navigator.pushNamed(context, AppRouter.forgetPasswordScreen);
               },
               child: const Text("Forget Password ?"),
             ),
@@ -93,7 +97,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             width: MediaQuery.of(context).size.width,
             child: ElevatedButton(
               onPressed: () {
-                print("should show create account screen");
+                Navigator.pushNamed(context, AppRouter.registerScreen);
               },
               child: const Text("Create new account"),
             ),
