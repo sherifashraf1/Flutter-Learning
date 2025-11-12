@@ -29,10 +29,6 @@ class LoginNotifier extends StateNotifier<DataState<void>> {
       );
     }
   }
-
-  void reset() {
-    state = DataState.success(null);
-  }
 }
 
 // Registration Provider
@@ -59,10 +55,6 @@ class RegistrationNotifier extends StateNotifier<DataState<void>> {
       );
     }
   }
-
-  void reset() {
-    state = DataState.success(null);
-  }
 }
 
 // Reset Password Provider
@@ -88,9 +80,5 @@ class ResetPasswordNotifier extends StateNotifier<DataState<void>> {
         errorType: ErrorType.alert,
       );
     }
-  }
-
-  void reset() {
-    state = DataState.success(null);
   }
 }
