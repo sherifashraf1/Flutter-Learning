@@ -1,12 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../mock/profile_mock/mock_user.dart';
 
-class PersonalInformationCard extends StatelessWidget {
+class PersonalInformationCard extends StatefulWidget {
   const PersonalInformationCard({super.key});
+
+  @override
+  State<PersonalInformationCard> createState() => _PersonalInformationCardState();
+}
+
+class _PersonalInformationCardState extends State<PersonalInformationCard> {
+  String? _savedEmail;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedEmail();
+  }
+
+  Future<void> _loadSavedEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString("email");
+    setState(() {
+      _savedEmail = email;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // Use saved email if available, otherwise use mocked email
+    final displayEmail = _savedEmail ?? userInfo.email;
+    
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -29,7 +54,7 @@ class PersonalInformationCard extends StatelessWidget {
                fontSize: 20),
           ),
           const SizedBox(height: 16),
-          _infoRow(context, "Email", userInfo.email),
+          _infoRow(context, "Email", displayEmail),
           const SizedBox(height: 8),
           _infoRow(context, "Gender", userInfo.gender),
           const SizedBox(height: 8),
