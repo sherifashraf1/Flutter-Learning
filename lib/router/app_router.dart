@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:profile_demo_app_with_flutter/screens/auth/forget_password_screen.dart';
 import 'package:profile_demo_app_with_flutter/screens/auth/login_screen.dart';
 import 'package:profile_demo_app_with_flutter/screens/auth/registration_screen.dart';
+import 'package:profile_demo_app_with_flutter/screens/firebase/book_details_screen.dart';
 import 'package:profile_demo_app_with_flutter/screens/firebase/book_list_screen.dart';
 import 'package:profile_demo_app_with_flutter/screens/profile/profile_screen.dart';
 import '../models/todo/todo_model.dart';
@@ -21,6 +22,7 @@ class AppRouter {
   static const movieDetails = 'movie_details_screen';
   static const homeScreen = "home_screen";
   static const booksListScreen = "books_list_screen";
+  static const bookDetailsScreen = "book_details_screen";
   static const tasksList = 'tasks_list_screen';
   static const taskDetails = 'task_details_screen';
   static const settingsScreen = 'settings_screen';
@@ -51,6 +53,15 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => HomeScreen());
       case booksListScreen:
         return MaterialPageRoute(builder: (_) => BookListScreen());
+      case bookDetailsScreen:
+        final arguments = settings.arguments;
+        if (arguments is String) {
+          return MaterialPageRoute(
+              builder: (_) => BookDetailsScreen(volumeId: arguments));
+        }
+        return MaterialPageRoute(
+          builder: (_) => _buildInvalidArgumentsScreen(),
+        );
       case tasksList:
         return MaterialPageRoute(builder: (_) => TasksScreen());
       case taskDetails:

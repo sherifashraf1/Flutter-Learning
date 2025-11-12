@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../router/app_router.dart';
 import '../../shared/empty_state/data_state_widget.dart';
 import '../../shared-enums/shared_enums.dart';
 import '../../widgets/reusable_widgets/reusable_card.dart';
@@ -231,11 +232,10 @@ class _BookListScreenState extends ConsumerState<BookListScreen> {
         return MovieCard.fromBook(
           book: book,
           onTap: () {
-            Navigator.push(
+            Navigator.pushNamed(
               context,
-              MaterialPageRoute(
-                builder: (_) => BookDetailsScreen(volumeId: book.id),
-              ),
+              AppRouter.bookDetailsScreen,
+              arguments: book.id,
             );
           },
         );
