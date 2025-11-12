@@ -114,15 +114,9 @@ class _MoviesListScreenState extends State<MoviesListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
         title: const Text(
           "Now Playing",
-          style: TextStyle(
-            color: Colors.greenAccent,
-            fontWeight: FontWeight.bold,
-          ),
         ),
         centerTitle: true,
       ),

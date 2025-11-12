@@ -3,6 +3,7 @@ import '../../models/movies_models/generic_response_model.dart';
 import '../../services/movies_services/movies_services.dart';
 import '../../shared-enums/shared_enums.dart';
 import '../../shared/empty_state/data_state_widget.dart';
+import '../../theme/app_theme.dart';
 import '../../widgets/movies/network_image_with_placeholder.dart';
 import '../../utils/secure_error_handler.dart';
 import '../../constants/app_constants.dart';
@@ -120,11 +121,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
       appBar: AppBar(
-        title: const Text("Movie Details", style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.transparent,
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text("Movie Details"),
       ),
       body: _detailsState.state == ViewState.loading && _detailsState.loadingType == LoadingType.defaultLoading
           ? const Center(child: LoadingWidget())
@@ -253,11 +251,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
-          Container(width: 4, height: 24, color: Colors.greenAccent),
+          Container(color: Colors.green, width: 4, height: 24),
           const SizedBox(width: 8),
           Text(title,
-              style: const TextStyle(
-                  fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .titleLarge
+          ),
         ],
       ),
     );
@@ -271,16 +272,19 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
         children: [
           if (movie.title.isNotEmpty)
             Text(movie.title,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                )),
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .titleLarge,
+            ),
           const SizedBox(height: 8),
           if ((movie.overview ?? '').isNotEmpty)
             Text(
               movie.overview!,
-              style: const TextStyle(color: Colors.white, fontSize: 14, height: 1.4),
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .bodyMedium,
             ),
         ],
       ),
@@ -293,15 +297,15 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     double width = 120,
     double height = 180,
   }) {
+    // Get the BoxTheme from the current theme
+    final boxTheme = Theme.of(context).extension<AppBoxTheme>();
+
     return SizedBox(
       width: width,
       child: Column(
         children: [
           Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.greenAccent, width: 2),
-              borderRadius: BorderRadius.circular(8),
-            ),
+            decoration: boxTheme?.card,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(6),
               child: NetworkImageWithPlaceholder(
@@ -315,9 +319,13 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
           const SizedBox(height: 8),
           Flexible(
             child: Text(name ?? '',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: Colors.white)),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .titleMedium,
+            ),
           ),
         ],
       ),

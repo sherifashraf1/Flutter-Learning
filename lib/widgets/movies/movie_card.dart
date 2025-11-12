@@ -12,7 +12,6 @@ class MovieCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: const Color(0xFF1E293B),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
@@ -35,24 +34,28 @@ class MovieCard extends StatelessWidget {
         ),
         title: Text(
             movie.title,
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: Theme
+                .of(context)
+                .textTheme
+                .titleMedium,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
         ),
         subtitle: Text(
             movie.releaseDate ?? "",
-            style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold)
+          style: Theme
+              .of(context)
+              .textTheme
+              .bodyMedium,
+
         ),
         trailing: RatingWidget(
           rating: movie.voteAverage,
           starSize: 14,
-          filledStarColor: Colors.greenAccent,
-          emptyStarColor: Colors.grey.shade600,
-          ratingTextStyle: const TextStyle(
-            color: Colors.lightBlueAccent,
-            fontWeight: FontWeight.bold,
-            fontSize: 12,
-          ),
+          ratingTextStyle: Theme
+              .of(context)
+              .textTheme
+              .bodySmall,
         ),
       ),
     );
