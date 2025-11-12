@@ -17,13 +17,13 @@ class ForgetPasswordScreen extends ConsumerStatefulWidget {
 
 class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
   // Form controller
-  late final TextEditingController _emailController;
+  final TextEditingController _emailController = TextEditingController();
 
   // Validation state
   String? _emailError;
 
   // Focus node
-  late final FocusNode _emailFocusNode;
+  final FocusNode _emailFocusNode = FocusNode();
 
   // Constants
   static const double _logoWidthFactor = 0.4;
@@ -35,19 +35,9 @@ class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeController();
-    _initializeFocusNode();
     _setupValidationListener();
     _setupFocusListener();
     _unfocusOnInit();
-  }
-
-  void _initializeController() {
-    _emailController = TextEditingController();
-  }
-
-  void _initializeFocusNode() {
-    _emailFocusNode = FocusNode();
   }
 
   void _setupValidationListener() {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:profile_demo_app_with_flutter/screens/auth/foget_password_screen.dart';
+import 'package:profile_demo_app_with_flutter/screens/auth/forget_password_screen.dart';
 import 'package:profile_demo_app_with_flutter/screens/auth/login_screen.dart';
 import 'package:profile_demo_app_with_flutter/screens/auth/registration_screen.dart';
 import 'package:profile_demo_app_with_flutter/screens/firebase/book_list_screen.dart';
