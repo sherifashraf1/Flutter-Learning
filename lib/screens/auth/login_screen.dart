@@ -168,8 +168,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final loginState = ref.watch(loginStateProvider);
-    final isLoading = loginState.state == ViewState.loading;
-
     ref.listen<DataState<void>>(loginStateProvider, (previous, next) {
       if (next.state == ViewState.success &&
           previous?.state != ViewState.success) {
@@ -182,13 +180,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       body: SafeArea(
         child: DataStateWidget<void>(
           dataState: loginState,
-          childBuilder: (_) => _buildLoginForm(isLoading),
+          childBuilder: (_) => _buildLoginForm(),
         ),
       ),
     );
   }
 
-  Widget _buildLoginForm(bool isLoading) {
+  Widget _buildLoginForm() {
     final size = MediaQuery.of(context).size;
     final theme = Theme.of(context);
 
@@ -208,7 +206,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             SizedBox(height: _verticalSpacing / 2),
             _buildForgetPasswordLink(),
             SizedBox(height: _sectionSpacing),
-            _buildLoginButton(isLoading),
+            _buildLoginButton(),
             SizedBox(height: _sectionSpacing),
             _buildSignUpLink(),
             SizedBox(height: _sectionSpacing),
@@ -287,18 +285,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Widget _buildLoginButton(bool isLoading) {
+  Widget _buildLoginButton() {
     return SizedBox(
       height: 50,
       child: ElevatedButton(
-        onPressed: isLoading ? null : _handleLogin,
-        child: isLoading
-            ? const SizedBox(
-          height: 20,
-          width: 20,
-          child: CircularProgressIndicator(strokeWidth: 2),
-        )
-            : const Text("Login"),
+        onPressed: _handleLogin,
+        child: const Text("Login")
       ),
     );
   }
