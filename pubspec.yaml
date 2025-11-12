@@ -47,6 +47,7 @@ dependencies:
   firebase_core:
   firebase_auth:
   shared_preferences: ^2.5.3
+  firebase_crashlytics: ^5.0.4
 dev_dependencies:
   flutter_test:
     sdk: flutter
