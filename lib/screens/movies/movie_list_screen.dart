@@ -3,7 +3,7 @@ import 'package:profile_demo_app_with_flutter/shared/empty_state/data_state_widg
 import '../../router/app_router.dart';
 import '../../services/movies_services/movies_services.dart';
 import '../../shared-enums/shared_enums.dart';
-import '../../widgets/movies/movie_card.dart';
+import '../../widgets/reusable_widgets/reusable_card.dart';
 import '../../utils/secure_error_handler.dart';
 import '../../models/movies_models/movie_model.dart';
 import '/shared/empty_state/data_state.dart';
@@ -145,13 +145,13 @@ class _MoviesListScreenState extends State<MoviesListScreen> {
           );
         }
         final movie = _movies[index];
-        return GestureDetector(
+        return MovieCard.fromMovie(
+          movie: movie,
           onTap: () => Navigator.pushNamed(
             context,
             AppRouter.movieDetails,
             arguments: movie.id,
           ),
-          child: MovieCard(movie: movie),
         );
       },
     );
