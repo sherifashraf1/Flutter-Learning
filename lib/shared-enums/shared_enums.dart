@@ -8,4 +8,5 @@ enum DateFormatStyle {
 }
 
 enum ViewState { loading, success, empty, error }
-enum LoadingType { defaultLoading, placeholder, pullToRefresh, loadMore }
+enum LoadingType { defaultLoading, placeholder, pullToRefresh, loadMore, overlayLoading }
+enum ErrorType { emptyState, alert }

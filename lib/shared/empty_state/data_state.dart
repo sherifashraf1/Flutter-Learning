@@ -8,6 +8,7 @@ class DataState<T> {
   final String? description;
   final LoadingType? loadingType;
   final VoidCallback? onRetry;
+  final ErrorType? errorType;
 
   DataState._({
     required this.state,
@@ -16,6 +17,7 @@ class DataState<T> {
     this.description,
     this.loadingType,
     this.onRetry,
+    this.errorType,
   });
 
   factory DataState.loading([LoadingType type = LoadingType.defaultLoading]) =>
@@ -34,11 +36,13 @@ class DataState<T> {
     String? title,
     String? description,
     VoidCallback? onRetry,
+    ErrorType errorType = ErrorType.emptyState,
   }) => DataState._(
     state: ViewState.error,
     title: title,
     description: description,
     onRetry: onRetry,
+    errorType: errorType,
   );
 
   DataState<R> map<R>(R Function(T data) transform) {
@@ -54,6 +58,7 @@ class DataState<T> {
           title: title,
           description: description,
           onRetry: onRetry,
+          errorType: errorType ?? ErrorType.emptyState,
         );
     }
   }
