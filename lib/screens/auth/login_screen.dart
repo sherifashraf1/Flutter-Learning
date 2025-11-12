@@ -16,148 +16,176 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
+  // Form key and controllers
   final _formKey = GlobalKey<FormState>();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  late final TextEditingController _emailController;
+  late final TextEditingController _passwordController;
 
+  // Validation state
   String? _emailError;
   String? _passwordError;
   bool _obscurePassword = true;
-  bool _hasAttemptedValidation = false;
-  final FocusNode _emailFocusNode = FocusNode();
-  final FocusNode _passwordFocusNode = FocusNode();
+
+  // Focus nodes
+  late final FocusNode _emailFocusNode;
+  late final FocusNode _passwordFocusNode;
+
+  // Constants
+  static const double _logoWidthFactor = 0.4;
+  static const double _logoHeightFactor = 0.13;
+  static const double _horizontalPadding = 24.0;
+  static const double _verticalSpacing = 16.0;
+  static const double _sectionSpacing = 24.0;
 
   @override
   void initState() {
     super.initState();
-    // Clear errors when screen is opened, especially if fields are empty
-    if (emailController.text.isEmpty) {
-      _emailError = null;
-    }
-    if (passwordController.text.isEmpty) {
-      _passwordError = null;
-    }
-    _hasAttemptedValidation = false;
-    // Add listeners for real-time validation
-    emailController.addListener(_validateEmail);
-    passwordController.addListener(_validatePassword);
-    // Clear errors when field gets focus
+    _initializeControllers();
+    _initializeFocusNodes();
+    _setupValidationListeners();
+    _setupFocusListeners();
+    _unfocusOnInit();
+  }
+
+  void _initializeControllers() {
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+  }
+
+  void _initializeFocusNodes() {
+    _emailFocusNode = FocusNode();
+    _passwordFocusNode = FocusNode();
+  }
+
+  void _setupValidationListeners() {
+    _emailController.addListener(_validateEmail);
+    _passwordController.addListener(_validatePassword);
+  }
+
+  void _setupFocusListeners() {
     _emailFocusNode.addListener(() {
       if (_emailFocusNode.hasFocus) {
-        setState(() {
-          _emailError = null;
-        });
+        setState(() => _emailError = null);
       }
     });
     _passwordFocusNode.addListener(() {
       if (_passwordFocusNode.hasFocus) {
-        setState(() {
-          _passwordError = null;
-        });
+        setState(() => _passwordError = null);
       }
     });
-    // Unfocus any fields when screen is opened and clear errors if fields are empty
+  }
+
+  void _unfocusOnInit() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _emailFocusNode.unfocus();
-      _passwordFocusNode.unfocus();
-      FocusScope.of(context).unfocus();
-      // Clear errors if fields are empty after navigation
-      if (emailController.text.isEmpty && _emailError != null) {
-        setState(() {
-          _emailError = null;
-        });
-      }
-      if (passwordController.text.isEmpty && _passwordError != null) {
-        setState(() {
-          _passwordError = null;
-        });
-      }
+      _unfocusAllFields();
+      _clearErrorsIfFieldsEmpty();
     });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Unfocus fields when route becomes inactive (navigating away)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final route = ModalRoute.of(context);
       if (route != null && !route.isCurrent) {
-        _emailFocusNode.unfocus();
-        _passwordFocusNode.unfocus();
-        FocusScope.of(context).unfocus();
-        // Clear errors if fields are empty when navigating away
-        if (emailController.text.isEmpty && _emailError != null) {
-          setState(() {
-            _emailError = null;
-          });
-        }
-        if (passwordController.text.isEmpty && _passwordError != null) {
-          setState(() {
-            _passwordError = null;
-          });
-        }
+        _unfocusAllFields();
+        _clearErrorsIfFieldsEmpty();
       }
     });
   }
 
   @override
   void dispose() {
-    // Unfocus fields before disposing
-    _emailFocusNode.unfocus();
-    _passwordFocusNode.unfocus();
-    // Remove listeners before disposing
-    emailController.removeListener(_validateEmail);
-    passwordController.removeListener(_validatePassword);
-    emailController.dispose();
-    passwordController.dispose();
+    _unfocusAllFields();
+    _emailController.removeListener(_validateEmail);
+    _passwordController.removeListener(_validatePassword);
+    _emailController.dispose();
+    _passwordController.dispose();
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
     super.dispose();
   }
 
+  // Validation methods
   void _validateEmail() {
     setState(() {
-      _emailError = ValidationManager.email(emailController.text);
+      _emailError = ValidationManager.email(_emailController.text);
     });
   }
 
   void _validatePassword() {
     setState(() {
-      _passwordError = ValidationManager.password(passwordController.text);
+      _passwordError = ValidationManager.password(_passwordController.text);
     });
   }
 
-  void _validateFields() {
+  void _validateAllFields() {
     setState(() {
-      _hasAttemptedValidation = true;
-      _emailError = ValidationManager.email(emailController.text);
-      _passwordError = ValidationManager.password(passwordController.text);
+      _emailError = ValidationManager.email(_emailController.text);
+      _passwordError = ValidationManager.password(_passwordController.text);
     });
   }
 
-  void _handleLogin() {
-    _validateFields();
-    if (_emailError == null && _passwordError == null) {
-      ref
-          .read(loginStateProvider.notifier)
-          .login(emailController.text, passwordController.text);
+  bool get _isFormValid => _emailError == null && _passwordError == null;
+
+  // Helper methods
+  void _unfocusAllFields() {
+    _emailFocusNode.unfocus();
+    _passwordFocusNode.unfocus();
+    FocusScope.of(context).unfocus();
+  }
+
+  void _clearErrorsIfFieldsEmpty() {
+    if (_emailController.text.isEmpty && _emailError != null) {
+      setState(() => _emailError = null);
     }
+    if (_passwordController.text.isEmpty && _passwordError != null) {
+      setState(() => _passwordError = null);
+    }
+  }
+
+  void _navigateToForgetPassword() {
+    _unfocusAllFields();
+    Navigator.pushNamed(context, AppRouter.forgetPasswordScreen);
+  }
+
+  void _navigateToSignUp() {
+    _unfocusAllFields();
+    Navigator.pushNamed(context, AppRouter.registerScreen);
+  }
+
+  void _navigateToHome() {
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      AppRouter.homeScreen,
+          (route) => false,
+    );
+  }
+
+  // Action handlers
+  void _handleLogin() {
+    _validateAllFields();
+    if (_isFormValid) {
+      ref.read(loginStateProvider.notifier).login(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+    }
+  }
+
+  void _togglePasswordVisibility() {
+    setState(() => _obscurePassword = !_obscurePassword);
   }
 
   @override
   Widget build(BuildContext context) {
     final loginState = ref.watch(loginStateProvider);
     final isLoading = loginState.state == ViewState.loading;
-    // Listen to state changes and handle UI side effects (navigation)
+
     ref.listen<DataState<void>>(loginStateProvider, (previous, next) {
-      // Handle success state - navigate to home
       if (next.state == ViewState.success &&
           previous?.state != ViewState.success) {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          AppRouter.homeScreen,
-              (route) => false,
-        );
+        _navigateToHome();
       }
     });
 
@@ -173,214 +201,275 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildLoginForm(bool isLoading) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    final size = MediaQuery.of(context).size;
+    final theme = Theme.of(context);
 
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Theme.of(context).brightness == Brightness.dark
-                  ? ColorFiltered(
-                colorFilter: const ColorFilter.mode(
-                  Colors.white,
-                  BlendMode.srcIn,
-                ),
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  width: screenWidth * 0.4,
-                  height: screenHeight * 0.13,
-                  fit: BoxFit.contain,
-                ),
-              )
-                  : Image.asset(
-                'assets/images/logo.png',
-                width: screenWidth * 0.4,
-                height: screenHeight * 0.13,
-                fit: BoxFit.contain,
-              ),
-              const SizedBox(height: 16),
+        padding: const EdgeInsets.symmetric(horizontal: _horizontalPadding),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(height: size.height * 0.05),
+            _buildLogo(size),
+            SizedBox(height: _sectionSpacing * 1.5),
+            _buildEmailField(),
+            SizedBox(height: _verticalSpacing),
+            _buildPasswordField(),
+            SizedBox(height: _verticalSpacing / 2),
+            _buildForgetPasswordLink(),
+            SizedBox(height: _sectionSpacing),
+            _buildLoginButton(isLoading),
+            SizedBox(height: _sectionSpacing),
+            _buildSignUpLink(),
+            SizedBox(height: _sectionSpacing),
+            _buildDivider(theme),
+            SizedBox(height: _sectionSpacing),
+            _buildSocialLoginButtons(size),
+            SizedBox(height: size.height * 0.01),
+            _buildSkipLoginLink(),
+          ],
+        ),
+      ),
+    );
+  }
 
-              AppTextFormFieldWidget(
-                label: "Email",
-                controller: emailController,
-                focusNode: _emailFocusNode,
-                prefixIcon: const Icon(Icons.email),
-                errorText: _emailError,
-                validator: ValidationManager.email,
-              ),
+  Widget _buildLogo(Size size) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final logo = Image.asset(
+      'assets/images/logo.png',
+      width: size.width * _logoWidthFactor,
+      height: size.height * _logoHeightFactor,
+      fit: BoxFit.contain,
+    );
 
-              const SizedBox(height: 16),
+    return Center(
+      child: isDark
+          ? ColorFiltered(
+        colorFilter: const ColorFilter.mode(
+          Colors.white,
+          BlendMode.srcIn,
+        ),
+        child: logo,
+      )
+          : logo,
+    );
+  }
 
-              AppTextFormFieldWidget(
-                label: "Password",
-                controller: passwordController,
-                focusNode: _passwordFocusNode,
-                prefixIcon: const Icon(Icons.lock),
-                obscure: _obscurePassword,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                  ),
-                  onPressed: () => setState(() {
-                    _obscurePassword = !_obscurePassword;
-                  }),
-                ),
-                errorText: _passwordError,
-                validator: ValidationManager.password,
-              ),
+  Widget _buildEmailField() {
+    return AppTextFormFieldWidget(
+      label: "Email",
+      controller: _emailController,
+      focusNode: _emailFocusNode,
+      prefixIcon: const Icon(Icons.email_outlined),
+      errorText: _emailError,
+      validator: ValidationManager.email,
+    );
+  }
 
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {
-                    // Unfocus fields before navigating
-                    _emailFocusNode.unfocus();
-                    _passwordFocusNode.unfocus();
-                    FocusScope.of(context).unfocus();
-                    Navigator.pushNamed(
-                      context,
-                      AppRouter.forgetPasswordScreen,
-                    );
-                  },
-                  child: const Text(
-                    "Forget Password ?",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
+  Widget _buildPasswordField() {
+    return AppTextFormFieldWidget(
+      label: "Password",
+      controller: _passwordController,
+      focusNode: _passwordFocusNode,
+      prefixIcon: const Icon(Icons.lock_outline),
+      obscure: _obscurePassword,
+      suffixIcon: IconButton(
+        icon: Icon(
+          _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+        ),
+        onPressed: _togglePasswordVisibility,
+      ),
+      errorText: _passwordError,
+      validator: ValidationManager.password,
+    );
+  }
 
-              const SizedBox(height: 12),
+  Widget _buildForgetPasswordLink() {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: TextButton(
+        onPressed: _navigateToForgetPassword,
+        child: const Text(
+          "Forgot Password?",
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+      ),
+    );
+  }
 
-              SizedBox(
-                width: screenWidth,
-                child: ElevatedButton(
-                  onPressed: isLoading ? null : _handleLogin,
-                  child: const Text("Login"),
-                ),
-              ),
+  Widget _buildLoginButton(bool isLoading) {
+    return SizedBox(
+      height: 50,
+      child: ElevatedButton(
+        onPressed: isLoading ? null : _handleLogin,
+        child: isLoading
+            ? const SizedBox(
+          height: 20,
+          width: 20,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        )
+            : const Text("Login"),
+      ),
+    );
+  }
 
-              const SizedBox(height: 24),
+  Widget _buildSignUpLink() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          "Don't have account? ",
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface.withAlpha(170),
+          ),
+        ),
+        GestureDetector(
+          onTap: _navigateToSignUp,
+          child: Text(
+            "Sign up",
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
-              // "Didn't have Account? Sign up" text
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 8,
-                children: [
-                  const Text("Don't have an account? "),
-                  GestureDetector(
-                    onTap: () {
-                      // Unfocus fields before navigating
-                      _emailFocusNode.unfocus();
-                      _passwordFocusNode.unfocus();
-                      FocusScope.of(context).unfocus();
-                      Navigator.pushNamed(context, AppRouter.registerScreen);
-                    },
-                    child: const Text(
-                      "Sign up",
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+  Widget _buildDivider(ThemeData theme) {
+    return Row(
+      children: [
+        Expanded(
+          child: Divider(
+            color: theme.colorScheme.onSurface,
+            thickness: 1,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            "OR",
+            style: TextStyle(
+              fontSize: 12,
+              color: theme.colorScheme.onSurface,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Divider(
+            color: theme.colorScheme.onSurface,
+            thickness: 1,
+          ),
+        ),
+      ],
+    );
+  }
 
-              const SizedBox(height: 24),
+  Widget _buildSocialLoginButtons(Size size) {
+    return Column(
+      children: [
+        _buildSocialButton(
+          label: "Sign in with Facebook",
+          icon: Icons.facebook,
+          backgroundColor: const Color(0xFF1877F2),
+          onPressed: () {
+            // TODO: Implement Facebook login
+          },
+        ),
+        const SizedBox(height: 12),
+        _buildSocialButton(
+          label: "Sign in with Google",
+          icon: Icons.g_mobiledata_outlined,
+          iconSize: 28,
+          backgroundColor: const Color(0xFFDB4437),
+          onPressed: () {
+            // TODO: Implement Google login
+          },
+        ),
+        const SizedBox(height: 12),
+        _buildAppleButton(),
+      ],
+    );
+  }
 
-              // OR separator
-              Row(
-                children: [
-                  Expanded(
-                    child: Divider(color: Colors.grey[400], thickness: 2),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text("OR", style: TextStyle(fontSize: 14)),
-                  ),
-                  Expanded(
-                    child: Divider(color: Colors.grey[400], thickness: 2),
-                  ),
-                ],
-              ),
+  Widget _buildSocialButton({
+    required String label,
+    required IconData icon,
+    double iconSize = 24,
+    required Color backgroundColor,
+    required VoidCallback onPressed,
+  }) {
+    return SizedBox(
+      height: 50,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: backgroundColor,
+          foregroundColor: Colors.white,
+          elevation: 1,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: iconSize),
+            const SizedBox(width: 12),
+            Text(label),
+          ],
+        ),
+      ),
+    );
+  }
 
-              const SizedBox(height: 24),
+  Widget _buildAppleButton() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = isDark ? Colors.white : Colors.black;
+    final foregroundColor = isDark ? Colors.black : Colors.white;
 
-              // Social login buttons
-              SizedBox(
-                width: screenWidth,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: Implement Facebook login
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: const Text("Sign in with Facebook"),
-                ),
-              ),
+    return SizedBox(
+      height: 50,
+      child: ElevatedButton(
+        onPressed: () {
+          // TODO: Implement Apple login
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: backgroundColor,
+          foregroundColor: foregroundColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.apple, size: 24, color: foregroundColor),
+            const SizedBox(width: 12),
+            Text(
+              "Sign in with Apple",
+              style: TextStyle(color: foregroundColor),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-              const SizedBox(height: 12),
-
-              SizedBox(
-                width: screenWidth,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: Implement Google login
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: const Text("Sign in with Google"),
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              SizedBox(
-                width: screenWidth,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: Implement Apple login
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: const Text("Sign in with Apple"),
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              // Skip Login link at the bottom
-              Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 20),
-                  child: GestureDetector(
-                    onTap: () {
-                      // TODO: Implement skip login functionality
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        AppRouter.homeScreen,
-                            (route) => false,
-                      );
-                    },
-                    child: Text("Skip Login"),
-                  ),
-                ),
-              ),
-            ],
+  Widget _buildSkipLoginLink() {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: TextButton(
+        onPressed: _navigateToHome,
+        child: Text(
+          "Skip Login",
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface.withAlpha(170),
+            fontWeight: FontWeight.w500,
           ),
         ),
       ),
