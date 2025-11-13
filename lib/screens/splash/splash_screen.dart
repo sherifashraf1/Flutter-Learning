@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,6 +17,8 @@ class _SplashScreenState extends State<SplashScreen> {
   static const double _logoWidthFactor = 0.6;
   static const double _logoHeightFactor = 0.6;
 
+  FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.instance;
+
   @override
   void initState() {
     init();
@@ -27,8 +30,10 @@ class _SplashScreenState extends State<SplashScreen> {
       final prefs = await SharedPreferences.getInstance();
       String? email = prefs.getString("email");
       if (email != null) {
+        firebaseAnalytics.logEvent(name: "Home screen", parameters: {'time': DateTime.now().toIso8601String()});
         Navigator.pushReplacementNamed(context, AppRouter.homeScreen);
       } else {
+        firebaseAnalytics.logEvent(name: "Login screen", parameters: {'time': DateTime.now().toIso8601String()});
         Navigator.pushReplacementNamed(context, AppRouter.loginScreen);
       }
     });
