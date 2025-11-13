@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,7 +21,13 @@ class LoginNotifier extends StateNotifier<DataState<void>> {
     try {
       await FirebaseServices.signIn(email.trim(), password.trim());
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString("email", email);
+      final user = FirebaseAuth.instance.currentUser;
+      
+      // Save user data from Firebase
+      await prefs.setString("email", user?.email ?? email);
+      await prefs.setString("name", user?.displayName ?? '');
+      await prefs.setString("profileImageUrl", user?.photoURL ?? '');
+      
       state = DataState.success(null);
     } catch (e) {
       SecureErrorHandler.logError(e, context: 'login');
@@ -54,6 +61,44 @@ class RegistrationNotifier extends StateNotifier<DataState<void>> {
         title: "Registration Failed",
         description: SecureErrorHandler.handleError(e, context: 'registration'),
         onRetry: () => register(email, password),
+        errorType: ErrorType.alert,
+      );
+    }
+  }
+}
+
+// Google Sign-In Provider
+final googleSignInStateProvider = StateNotifierProvider<GoogleSignInNotifier, DataState<void>>((ref) {
+  return GoogleSignInNotifier();
+});
+
+class GoogleSignInNotifier extends StateNotifier<DataState<void>> {
+  GoogleSignInNotifier() : super(DataState.success(null));
+
+  Future<void> signInWithGoogle() async {
+    state = DataState.loading(LoadingType.overlayLoading);
+
+    try {
+      final userCredential = await FirebaseServices.signInWithGoogle();
+      if (userCredential != null && userCredential.user != null) {
+        final user = FirebaseAuth.instance.currentUser;
+        final prefs = await SharedPreferences.getInstance();
+        
+        // Save user data to SharedPreferences
+        await prefs.setString("email", user?.email ?? userCredential.user!.email ?? '');
+        await prefs.setString("name", user?.displayName ?? userCredential.user!.displayName ?? '');
+        await prefs.setString("profileImageUrl", user?.photoURL ?? userCredential.user!.photoURL ?? '');
+        
+        state = DataState.success(null);
+      } else {
+        throw Exception("Failed to get user credentials");
+      }
+    } catch (e) {
+      SecureErrorHandler.logError(e, context: 'googleSignIn');
+      state = DataState.error(
+        title: "Google Sign In Failed",
+        description: SecureErrorHandler.handleError(e, context: 'googleSignIn'),
+        onRetry: () => signInWithGoogle(),
         errorType: ErrorType.alert,
       );
     }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:profile_demo_app_with_flutter/router/app_router.dart';
 import '../../widgets/Auth/app_text_form_field.dart';
 import '../../shared-enums/shared_enums.dart';
@@ -142,6 +143,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     Navigator.pushNamed(context, AppRouter.registerScreen);
   }
 
+  void _handleGoogleSignIn() {
+    ref.read(googleSignInStateProvider.notifier).signInWithGoogle();
+  }
+
   void _navigateToHome() {
     Navigator.pushNamedAndRemoveUntil(
       context,
@@ -168,18 +173,34 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final loginState = ref.watch(loginStateProvider);
+    final googleSignInState = ref.watch(googleSignInStateProvider);
+    
+    // Listen to login state changes
     ref.listen<DataState<void>>(loginStateProvider, (previous, next) {
       if (next.state == ViewState.success &&
           previous?.state != ViewState.success) {
         _navigateToHome();
       }
     });
+    
+    // Listen to Google Sign-In state changes
+    ref.listen<DataState<void>>(googleSignInStateProvider, (previous, next) {
+      if (next.state == ViewState.success &&
+          previous?.state != ViewState.success) {
+        _navigateToHome();
+      }
+    });
 
+    // Use Google Sign-In state if it's loading, otherwise use login state
+    final currentState = googleSignInState.state == ViewState.loading 
+        ? googleSignInState 
+        : loginState;
+    
     return Scaffold(
       appBar: AppBar(title: const Text('Login')),
       body: SafeArea(
         child: DataStateWidget<void>(
-          dataState: loginState,
+          dataState: currentState,
           childBuilder: (_) => _buildLoginForm(),
         ),
       ),
@@ -366,9 +387,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           icon: Icons.g_mobiledata_outlined,
           iconSize: 28,
           backgroundColor: const Color(0xFFDB4437),
-          onPressed: () {
-            // TODO: Implement Google login
-          },
+          onPressed: _handleGoogleSignIn,
         ),
         const SizedBox(height: 12),
         _buildAppleButton(),
