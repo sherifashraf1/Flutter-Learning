@@ -237,6 +237,10 @@ class _DataStateWidgetState<T> extends State<DataStateWidget<T>> {
         return const Center(child: LoadingWidget());
 
       case LoadingType.placeholder:
+        final isLightMode = theme.brightness == Brightness.light;
+        final placeholderColor = isLightMode 
+            ? const Color(0xFF1565C0) // Dark blue for light mode
+            : theme.colorScheme.primary;
         return SizedBox(
           height: widget.placeholderHeight,
           child: Center(
@@ -246,7 +250,7 @@ class _DataStateWidgetState<T> extends State<DataStateWidget<T>> {
                 Text("Loading...", style: defaultLoadingTextStyle),
                 const SizedBox(width: 8),
                 LoadingWidget(
-                  indicatorColor: theme.colorScheme.primary,
+                  indicatorColor: placeholderColor,
                   size: 24,
                 ),
               ],
@@ -285,6 +289,10 @@ class _DataStateWidgetState<T> extends State<DataStateWidget<T>> {
         );
 
       case LoadingType.placeholder:
+        final isLightMode = theme.brightness == Brightness.light;
+        final placeholderColor = isLightMode 
+            ? const Color(0xFF1565C0) // Dark blue for light mode
+            : theme.colorScheme.primary;
         return SizedBox(
           height: widget.placeholderHeight,
           child: Padding(
@@ -295,7 +303,7 @@ class _DataStateWidgetState<T> extends State<DataStateWidget<T>> {
                 Text("Loading...", style: defaultLoadingTextStyle),
                 const SizedBox(width: 8),
                 LoadingWidget(
-                  indicatorColor: theme.colorScheme.primary,
+                  indicatorColor: placeholderColor,
                   size: 24,
                 ),
               ],
