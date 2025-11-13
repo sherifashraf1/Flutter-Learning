@@ -4,6 +4,17 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+	<dict>
+	    <key>CFBundleTypeRole</key>
+	    <string>Editor</string>
+	    <key>CFBundleURLSchemes</key>
+	    <array>
+	    <string>com.googleusercontent.apps.959776568833-jabfgepi4k6svaq9m2gtug2hpa3jibf2</string>
+	    </array>
+    </dict>
+    </array>
 	<key>CFBundleDisplayName</key>
 	<string>Profile Demo App With Flutter</string>
 	<key>CFBundleExecutable</key>
