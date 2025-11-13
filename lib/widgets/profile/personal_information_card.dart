@@ -1,37 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../mock/profile_mock/mock_user.dart';
 
-class PersonalInformationCard extends StatefulWidget {
-  const PersonalInformationCard({super.key});
+class PersonalInformationCard extends StatelessWidget {
+  final String email;
+  final String phoneNumber;
 
-  @override
-  State<PersonalInformationCard> createState() => _PersonalInformationCardState();
-}
-
-class _PersonalInformationCardState extends State<PersonalInformationCard> {
-  String? _savedEmail;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadSavedEmail();
-  }
-
-  Future<void> _loadSavedEmail() async {
-    final prefs = await SharedPreferences.getInstance();
-    final email = prefs.getString("email");
-    setState(() {
-      _savedEmail = email;
-    });
-  }
+  const PersonalInformationCard({
+    super.key,
+    required this.email,
+    required this.phoneNumber,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // Use saved email if available, otherwise use mocked email
-    final displayEmail = _savedEmail ?? userInfo.email;
-    
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -54,7 +36,7 @@ class _PersonalInformationCardState extends State<PersonalInformationCard> {
                fontSize: 20),
           ),
           const SizedBox(height: 16),
-          _infoRow(context, "Email", displayEmail),
+          _infoRow(context, "Email", email),
           const SizedBox(height: 8),
           _infoRow(context, "Gender", userInfo.gender),
           const SizedBox(height: 8),
@@ -62,7 +44,7 @@ class _PersonalInformationCardState extends State<PersonalInformationCard> {
           const SizedBox(height: 8),
           _infoRow(context, "Nationality", userInfo.nationality),
           const SizedBox(height: 8),
-          _infoRow(context, "Phone Number", userInfo.phoneNumber),
+          _infoRow(context, "Phone Number", phoneNumber),
           const SizedBox(height: 8),
           _infoRow(context, "Address", userInfo.address),
         ],
