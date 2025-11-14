@@ -41,48 +41,48 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAv5-Ou_EgDOihndSfW1G59vdsWFtmjnmE',
-    appId: '1:959776568833:web:9594c8d75799de990bb200',
-    messagingSenderId: '959776568833',
-    projectId: 'flutter-firebase-demo-4a945',
-    authDomain: 'flutter-firebase-demo-4a945.firebaseapp.com',
-    storageBucket: 'flutter-firebase-demo-4a945.firebasestorage.app',
-    measurementId: 'G-C4JYBD1BDG',
+    apiKey: String.fromEnvironment('FIREBASE_API_KEY_WEB'),
+    appId: String.fromEnvironment('FIREBASE_APP_ID_WEB'),
+    messagingSenderId: String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID'),
+    projectId: String.fromEnvironment('FIREBASE_PROJECT_ID'),
+    authDomain: String.fromEnvironment('FIREBASE_AUTH_DOMAIN'),
+    storageBucket: String.fromEnvironment('FIREBASE_STORAGE_BUCKET'),
+    measurementId: String.fromEnvironment('FIREBASE_MEASUREMENT_ID_WEB'),
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyB3lZsyf8n1PpwJEow1x8aNnVNbTBQUH_8',
-    appId: '1:959776568833:android:f245cc6abd7ac17b0bb200',
-    messagingSenderId: '959776568833',
-    projectId: 'flutter-firebase-demo-4a945',
-    storageBucket: 'flutter-firebase-demo-4a945.firebasestorage.app',
+    apiKey: String.fromEnvironment('FIREBASE_API_KEY_ANDROID'),
+    appId: String.fromEnvironment('FIREBASE_APP_ID_ANDROID'),
+    messagingSenderId: String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID'),
+    projectId: String.fromEnvironment('FIREBASE_PROJECT_ID'),
+    storageBucket: String.fromEnvironment('FIREBASE_STORAGE_BUCKET'),
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDRsdD4sbdbqcUmCMmfMzr-56dP56rJmVk',
-    appId: '1:959776568833:ios:d1fa8622ea03750f0bb200',
-    messagingSenderId: '959776568833',
-    projectId: 'flutter-firebase-demo-4a945',
-    storageBucket: 'flutter-firebase-demo-4a945.firebasestorage.app',
-    iosBundleId: 'com.example.profileDemoAppWithFlutter',
+    apiKey: String.fromEnvironment('FIREBASE_API_KEY_IOS'),
+    appId: String.fromEnvironment('FIREBASE_APP_ID_IOS'),
+    messagingSenderId: String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID'),
+    projectId: String.fromEnvironment('FIREBASE_PROJECT_ID'),
+    storageBucket: String.fromEnvironment('FIREBASE_STORAGE_BUCKET'),
+    iosBundleId: String.fromEnvironment('FIREBASE_IOS_BUNDLE_ID'),
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDRsdD4sbdbqcUmCMmfMzr-56dP56rJmVk',
-    appId: '1:959776568833:ios:d1fa8622ea03750f0bb200',
-    messagingSenderId: '959776568833',
-    projectId: 'flutter-firebase-demo-4a945',
-    storageBucket: 'flutter-firebase-demo-4a945.firebasestorage.app',
-    iosBundleId: 'com.example.profileDemoAppWithFlutter',
+    apiKey: String.fromEnvironment('FIREBASE_API_KEY_MACOS'),
+    appId: String.fromEnvironment('FIREBASE_APP_ID_MACOS'),
+    messagingSenderId: String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID'),
+    projectId: String.fromEnvironment('FIREBASE_PROJECT_ID'),
+    storageBucket: String.fromEnvironment('FIREBASE_STORAGE_BUCKET'),
+    iosBundleId: String.fromEnvironment('FIREBASE_IOS_BUNDLE_ID'),
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyAv5-Ou_EgDOihndSfW1G59vdsWFtmjnmE',
-    appId: '1:959776568833:web:498067408e7f6e020bb200',
-    messagingSenderId: '959776568833',
-    projectId: 'flutter-firebase-demo-4a945',
-    authDomain: 'flutter-firebase-demo-4a945.firebaseapp.com',
-    storageBucket: 'flutter-firebase-demo-4a945.firebasestorage.app',
-    measurementId: 'G-Q9TF8R8TLZ',
+    apiKey: String.fromEnvironment('FIREBASE_API_KEY_WINDOWS'),
+    appId: String.fromEnvironment('FIREBASE_APP_ID_WINDOWS'),
+    messagingSenderId: String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID'),
+    projectId: String.fromEnvironment('FIREBASE_PROJECT_ID'),
+    authDomain: String.fromEnvironment('FIREBASE_AUTH_DOMAIN'),
+    storageBucket: String.fromEnvironment('FIREBASE_STORAGE_BUCKET'),
+    measurementId: String.fromEnvironment('FIREBASE_MEASUREMENT_ID_WINDOWS'),
   );
 }

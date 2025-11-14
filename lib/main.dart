@@ -14,8 +14,26 @@ import 'package:profile_demo_app_with_flutter/theme/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   AdaptiveThemeMode currentThemeMode = AdaptiveThemeMode.light;
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  
+  // Load environment variables for services that use dotenv (BooksService, MoviesService, etc.)
   await dotenv.load(fileName: ".env");
+  
+  // Initialize Firebase only if it hasn't been initialized yet
+  try {
+    // Check if default Firebase app already exists
+    Firebase.app();
+  } catch (e) {
+    // Default app doesn't exist, initialize it
+    try {
+      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    } catch (initError) {
+      // If initialization fails due to duplicate app, ignore it
+      // This can happen during hot reload or if Firebase was auto-initialized
+      if (!initError.toString().contains('duplicate-app')) {
+        rethrow;
+      }
+    }
+  }
   await Hive.initFlutter();
 
   // Open the boxes before the app starts to ensure they're ready
