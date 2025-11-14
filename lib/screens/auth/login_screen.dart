@@ -52,16 +52,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _setupFocusListeners() {
-    _emailFocusNode.addListener(() {
-      if (_emailFocusNode.hasFocus) {
-        setState(() => _emailError = null);
-      }
-    });
-    _passwordFocusNode.addListener(() {
-      if (_passwordFocusNode.hasFocus) {
-        setState(() => _passwordError = null);
-      }
-    });
+    _emailFocusNode.addListener(_onEmailFocusChange);
+    _passwordFocusNode.addListener(_onPasswordFocusChange);
+  }
+
+  void _onEmailFocusChange() {
+    if (_emailFocusNode.hasFocus) {
+      setState(() => _emailError = null);
+    }
+  }
+
+  void _onPasswordFocusChange() {
+    if (_passwordFocusNode.hasFocus) {
+      setState(() => _passwordError = null);
+    }
   }
 
   void _unfocusOnInit() {
@@ -88,6 +92,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     _unfocusAllFields();
     _emailController.removeListener(_validateEmail);
     _passwordController.removeListener(_validatePassword);
+    _emailFocusNode.removeListener(_onEmailFocusChange);
+    _passwordFocusNode.removeListener(_onPasswordFocusChange);
     _emailController.dispose();
     _passwordController.dispose();
     _emailFocusNode.dispose();
