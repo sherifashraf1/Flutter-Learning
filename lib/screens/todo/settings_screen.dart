@@ -21,6 +21,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _checkLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
     final email = prefs.getString("email");
     setState(() {
       _isLoggedIn = email != null;
