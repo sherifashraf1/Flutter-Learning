@@ -13,53 +13,78 @@ import 'package:profile_demo_app_with_flutter/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  AdaptiveThemeMode currentThemeMode = AdaptiveThemeMode.light;
   
-  // Load environment variables for services that use dotenv (BooksService, MoviesService, etc.)
+  await _initializeApp();
+  
+  final themeMode = await _loadThemeMode();
+  _setupErrorHandling();
+  
+  runApp(ProviderScope(child: MyApp(savedThemeMode: themeMode)));
+}
+
+/// Initializes all app dependencies
+Future<void> _initializeApp() async {
+  await _loadEnvironmentVariables();
+  await _initializeFirebase();
+  await _initializeHive();
+}
+
+/// Loads environment variables from .env file
+Future<void> _loadEnvironmentVariables() async {
   await dotenv.load(fileName: ".env");
-  
-  // Initialize Firebase only if it hasn't been initialized yet
+}
+
+/// Initializes Firebase if not already initialized
+Future<void> _initializeFirebase() async {
   try {
     // Check if default Firebase app already exists
     Firebase.app();
-  } catch (e) {
+  } catch (_) {
     // Default app doesn't exist, initialize it
     try {
-      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-    } catch (initError) {
-      // If initialization fails due to duplicate app, ignore it
-      // This can happen during hot reload or if Firebase was auto-initialized
-      if (!initError.toString().contains('duplicate-app')) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    } catch (error) {
+      // Ignore duplicate app errors (can happen during hot reload)
+      if (!error.toString().contains('duplicate-app')) {
         rethrow;
       }
     }
   }
+}
+
+/// Initializes Hive and opens required boxes
+Future<void> _initializeHive() async {
   await Hive.initFlutter();
+  await Future.wait([
+    Hive.openBox('todosBox'),
+    Hive.openBox('auditLogsBox'),
+  ]);
+}
 
-  // Open the boxes before the app starts to ensure they're ready
-  await Hive.openBox('todosBox');
-  await Hive.openBox('auditLogsBox');
-
+/// Loads the saved theme mode or returns light as default
+Future<AdaptiveThemeMode> _loadThemeMode() async {
   try {
     final savedThemeMode = await AdaptiveTheme.getThemeMode();
-    currentThemeMode = savedThemeMode!;
-  } catch (e) {
-    currentThemeMode = AdaptiveThemeMode.light;
+    return savedThemeMode ?? AdaptiveThemeMode.light;
+  } catch (_) {
+    return AdaptiveThemeMode.light;
   }
+}
 
-  // sync errors (main thread)
+/// Sets up global error handling for Crashlytics
+void _setupErrorHandling() {
+  // Sync errors (main thread)
   FlutterError.onError = (errorDetails) {
     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
   };
 
-  // async errors (paltform specific errors, api request errors)
-  // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+  // Async errors (platform specific errors, API request errors)
   PlatformDispatcher.instance.onError = (error, stack) {
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true;
   };
-
-  runApp(ProviderScope(child: MyApp(savedThemeMode: currentThemeMode)));
 }
 
 class MyApp extends StatelessWidget {
@@ -74,7 +99,7 @@ class MyApp extends StatelessWidget {
       dark: AppTheme.buildDarkTheme(),
       initial: savedThemeMode,
       builder: (theme, darkTheme) => MaterialApp(
-        title: "Todo Task Demo",
+        title: "Flutter Learning",
         theme: theme,
         darkTheme: darkTheme,
         debugShowCheckedModeBanner: false,
