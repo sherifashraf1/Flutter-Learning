@@ -85,24 +85,30 @@ class AuditLogService {
   Future<void> clearOldLogs({int daysToKeep = 90}) async {
     try {
       final cutoffDate = DateTime.now().subtract(Duration(days: daysToKeep));
-      final keysToDelete = <String>[];
+      final cutoffMicros = cutoffDate.microsecondsSinceEpoch;
+      final keysToDelete = <dynamic>[];
 
       for (var key in _box.keys) {
         try {
+          // The key is the timestamp in microseconds since epoch as a string.
+          final logMicros = int.parse(key.toString());
+          if (logMicros < cutoffMicros) {
+            keysToDelete.add(key);
+          }
+        } catch (e) {
+          // Fallback for keys that are not valid timestamps.
           final value = _box.get(key);
           if (value != null) {
             final log = AuditLog.fromMap(Map<String, dynamic>.from(value));
             if (log.timestamp.isBefore(cutoffDate)) {
-              keysToDelete.add(key.toString());
+              keysToDelete.add(key);
             }
           }
-        } catch (e) {
-          continue;
         }
       }
 
-      for (var key in keysToDelete) {
-        await _box.delete(key);
+      if (keysToDelete.isNotEmpty) {
+        await _box.deleteAll(keysToDelete);
       }
     } catch (e, stackTrace) {
       SecureErrorHandler.logError(
