@@ -176,26 +176,78 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     setState(() => _obscurePassword = !_obscurePassword);
   }
 
+  /// Checks if an alert dialog should be shown for the error state
+  /// Only shows when transitioning INTO error state (not when already in error)
+  bool _shouldShowAlertDialog(DataState<void>? previous, DataState<void> next) {
+    final isErrorState = next.state == ViewState.error;
+    final isAlertType = next.errorType == ErrorType.alert;
+    final isTransitioningToError = previous?.state != ViewState.error;
+    final hasDescription = next.description != null;
+    
+    return isErrorState && isAlertType && isTransitioningToError && hasDescription;
+  }
+
+  /// Shows an alert dialog for error states
+  void _showAlertDialog(DataState<void> state) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(state.title ?? 'Error'),
+          content: Text(state.description!),
+          actions: [
+            if (state.onRetry != null)
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  state.onRetry?.call();
+                },
+                child: const Text('Retry'),
+              ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  /// Handles state changes for authentication providers
+  void _handleAuthStateChange(
+    DataState<void>? previous,
+    DataState<void> next,
+  ) {
+    // Navigate to home on successful authentication
+    if (next.state == ViewState.success &&
+        previous?.state != ViewState.success) {
+      _navigateToHome();
+    }
+    // Show alert dialog for alert-type errors
+    if (_shouldShowAlertDialog(previous, next)) {
+      _showAlertDialog(next);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final loginState = ref.watch(loginStateProvider);
     final googleSignInState = ref.watch(googleSignInStateProvider);
     
     // Listen to login state changes
-    ref.listen<DataState<void>>(loginStateProvider, (previous, next) {
-      if (next.state == ViewState.success &&
-          previous?.state != ViewState.success) {
-        _navigateToHome();
-      }
-    });
+    ref.listen<DataState<void>>(
+      loginStateProvider,
+      (previous, next) => _handleAuthStateChange(previous, next),
+    );
     
     // Listen to Google Sign-In state changes
-    ref.listen<DataState<void>>(googleSignInStateProvider, (previous, next) {
-      if (next.state == ViewState.success &&
-          previous?.state != ViewState.success) {
-        _navigateToHome();
-      }
-    });
+    ref.listen<DataState<void>>(
+      googleSignInStateProvider,
+      (previous, next) => _handleAuthStateChange(previous, next),
+    );
 
     // Use Google Sign-In state if it's loading, otherwise use login state
     final currentState = googleSignInState.state == ViewState.loading 

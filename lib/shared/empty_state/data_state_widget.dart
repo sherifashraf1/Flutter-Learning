@@ -31,42 +31,6 @@ class DataStateWidget<T> extends StatefulWidget {
 
 class _DataStateWidgetState<T> extends State<DataStateWidget<T>> {
   @override
-  void didUpdateWidget(DataStateWidget<T> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    
-    // Handle alert error - show dialog when error state changes
-    if (widget.dataState.state == ViewState.error &&
-        widget.dataState.errorType == ErrorType.alert &&
-        oldWidget.dataState.state != ViewState.error) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && widget.dataState.description != null) {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text(widget.dataState.title ?? 'Error'),
-              content: Text(widget.dataState.description!),
-              actions: [
-                if (widget.dataState.onRetry != null)
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      widget.dataState.onRetry?.call();
-                    },
-                    child: const Text('Retry'),
-                  ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancel'),
-                ),
-              ],
-            ),
-          );
-        }
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return widget.containerHeight != null
         ? SizedBox(
@@ -131,7 +95,7 @@ class _DataStateWidgetState<T> extends State<DataStateWidget<T>> {
         return _buildEmptyOrErrorContent(context, widget.dataState);
       case ViewState.error:
         // For alert errors, show the content (form) instead of error UI
-        // The snackbar is handled in didUpdateWidget
+        // The dialog is handled in screen widgets using ref.listen
         if (widget.dataState.errorType == ErrorType.alert && widget.childBuilder != null) {
           return widget.childBuilder!(widget.dataState.data as T);
         }
