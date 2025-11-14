@@ -58,7 +58,7 @@ class TaskCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     if (todo.title.isNotEmpty && todo.description.isNotEmpty)
-                      const SizedBox(),
+                      const SizedBox(height: 4),
                     if (todo.description.isNotEmpty)
                       Text(
                         todo.description,
