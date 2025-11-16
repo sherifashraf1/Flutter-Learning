@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:profile_demo_app_with_flutter/router/app_router.dart';
 import '../../widgets/Auth/app_text_form_field.dart';
 import '../../shared-enums/shared_enums.dart';
@@ -31,9 +30,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
 
-  // Riverpod listeners
-  late final void Function() _removeLoginListener;
-  late final void Function() _removeGoogleListener;
+  // Riverpod listener subscriptions (for manual management)
+  ProviderSubscription<DataState<void>>? _loginSubscription;
+  ProviderSubscription<DataState<void>>? _googleSignInSubscription;
 
   // Constants
   static const double _logoWidthFactor = 0.4;
@@ -47,21 +46,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.initState();
     _setupValidationListeners();
     _setupFocusListeners();
-    _setupRiverpodListeners();
     _unfocusOnInit();
   }
 
-  /// Sets up Riverpod state listeners for authentication providers
-  void _setupRiverpodListeners() {
-    _removeLoginListener = ref.listen<DataState<void>>(
-      loginStateProvider,
-      (previous, next) => _handleAuthStateChange(previous, next),
-    );
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     
-    _removeGoogleListener = ref.listen<DataState<void>>(
-      googleSignInStateProvider,
-      (previous, next) => _handleAuthStateChange(previous, next),
-    );
+    // Set up Riverpod listeners after the widget is built
+    // Using listenManual to set up listeners outside of build method
+    _loginSubscription ??= ref.listenManual<DataState<void>>(
+        loginStateProvider,
+        (previous, next) => _handleAuthStateChange(previous, next),
+      );
+    
+    _googleSignInSubscription ??= ref.listenManual<DataState<void>>(
+        googleSignInStateProvider,
+        (previous, next) => _handleAuthStateChange(previous, next),
+      );
+    
+    // Handle route changes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final route = ModalRoute.of(context);
+      if (route != null && !route.isCurrent) {
+        _unfocusAllFields();
+        _clearErrorsIfFieldsEmpty();
+      }
+    });
   }
 
   void _setupValidationListeners() {
@@ -94,18 +105,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final route = ModalRoute.of(context);
-      if (route != null && !route.isCurrent) {
-        _unfocusAllFields();
-        _clearErrorsIfFieldsEmpty();
-      }
-    });
-  }
-
-  @override
   void dispose() {
     _unfocusAllFields();
     _emailController.removeListener(_validateEmail);
@@ -116,8 +115,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     _passwordController.dispose();
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
-    _removeLoginListener();
-    _removeGoogleListener();
+    
+    // Dispose Riverpod listener subscriptions
+    _loginSubscription?.close();
+    _googleSignInSubscription?.close();
+    
     super.dispose();
   }
 
