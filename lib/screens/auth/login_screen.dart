@@ -179,6 +179,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   /// Checks if an alert dialog should be shown for the error state
   /// Only shows when transitioning INTO error state (not when already in error)
   bool _shouldShowAlertDialog(DataState<void>? previous, DataState<void> next) {
+    if (!mounted) return false;
+    
     final isErrorState = next.state == ViewState.error;
     final isAlertType = next.errorType == ErrorType.alert;
     final isTransitioningToError = previous?.state != ViewState.error;
