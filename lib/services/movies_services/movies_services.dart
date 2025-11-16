@@ -9,7 +9,7 @@ import '../../models/movies_models/movie_model.dart';
 import '../../models/movies_models/movie_credits_model.dart';
 
 class MoviesService {
-  final String? baseUrl = dotenv.env['BASE_URL'];
+  final String? baseUrl = dotenv.env['MOVIES_BASE_URL'];
   final String? apiKey = dotenv.env['API_KEY'];
 
   Uri _buildUri(String path, [Map<String, String>? params]) {
@@ -36,8 +36,13 @@ class MoviesService {
       } else {
         throw Exception('Failed to fetch movies: ${response.statusCode}');
       }
-    } catch (error) {
-      SecureErrorHandler.logError(error, context: 'getNowPlayingMovies');
+    } catch (error, stackTrace) {
+      SecureErrorHandler.logNonFatalError(
+        error,
+        context: 'getNowPlayingMovies',
+        stackTrace: stackTrace,
+        additionalInfo: {'page': page},
+      );
       throw Exception(
         SecureErrorHandler.handleError(error, context: 'getNowPlayingMovies'),
       );
@@ -57,8 +62,13 @@ class MoviesService {
           'Failed to fetch movie details: ${response.statusCode}',
         );
       }
-    } catch (error) {
-      SecureErrorHandler.logError(error, context: 'getMovieDetails');
+    } catch (error, stackTrace) {
+      SecureErrorHandler.logNonFatalError(
+        error,
+        context: 'getMovieDetails',
+        stackTrace: stackTrace,
+        additionalInfo: {'movieId': movieId},
+      );
       throw Exception(
         SecureErrorHandler.handleError(error, context: 'getMovieDetails'),
       );
@@ -76,8 +86,13 @@ class MoviesService {
       } else {
         throw Exception('Failed to load credits: ${response.statusCode}');
       }
-    } catch (error) {
-      SecureErrorHandler.logError(error, context: 'getActorsForMovie');
+    } catch (error, stackTrace) {
+      SecureErrorHandler.logNonFatalError(
+        error,
+        context: 'getActorsForMovie',
+        stackTrace: stackTrace,
+        additionalInfo: {'movieId': id},
+      );
       throw Exception(
         SecureErrorHandler.handleError(error, context: 'getActorsForMovie'),
       );
@@ -100,8 +115,13 @@ class MoviesService {
           'Failed to load similar movies: ${response.statusCode}',
         );
       }
-    } catch (error) {
-      SecureErrorHandler.logError(error, context: 'getSimilarMovies');
+    } catch (error, stackTrace) {
+      SecureErrorHandler.logNonFatalError(
+        error,
+        context: 'getSimilarMovies',
+        stackTrace: stackTrace,
+        additionalInfo: {'movieId': id, 'page': page},
+      );
       throw Exception(
         SecureErrorHandler.handleError(error, context: 'getSimilarMovies'),
       );
@@ -124,8 +144,13 @@ class MoviesService {
           'Failed to load recommendations: ${response.statusCode}',
         );
       }
-    } catch (error) {
-      SecureErrorHandler.logError(error, context: 'getRecommendations');
+    } catch (error, stackTrace) {
+      SecureErrorHandler.logNonFatalError(
+        error,
+        context: 'getRecommendations',
+        stackTrace: stackTrace,
+        additionalInfo: {'movieId': id, 'page': page},
+      );
       throw Exception(
         SecureErrorHandler.handleError(error, context: 'getRecommendations'),
       );

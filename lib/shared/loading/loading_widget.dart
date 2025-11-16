@@ -34,13 +34,19 @@ class _LoadingWidgetState extends State<LoadingWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // Use dark blue in light mode, otherwise use provided color or default
+    final isLightMode = Theme.of(context).brightness == Brightness.light;
+    final color = widget.indicatorColor == Colors.greenAccent
+        ? (isLightMode ? const Color(0xFF1565C0) : Colors.greenAccent) // Dark blue for light mode
+        : widget.indicatorColor;
+
     return Center(
       child: SizedBox(
         width: widget.size,
         height: widget.size,
         child: _showIndicator
             ? CircularProgressIndicator(
-                color: widget.indicatorColor,
+                color: color,
                 strokeWidth: widget.strokeWidth,
               )
             : const SizedBox.shrink(), // Show nothing until ready

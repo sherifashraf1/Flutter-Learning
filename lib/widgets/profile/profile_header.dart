@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
-import '../../mock/profile_mock/mock_user.dart';
+import '../movies/network_image_with_placeholder.dart';
 
 class ProfileHeader extends StatelessWidget {
-  const ProfileHeader({super.key});
+  final String userName;
+  final String profileImageUrl;
+  final String userBio;
+
+  const ProfileHeader({
+    super.key,
+    required this.userName,
+    required this.profileImageUrl,
+    required this.userBio,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,36 +29,20 @@ class ProfileHeader extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                // Always show placeholder first (at the bottom)
-                Image.asset(
-                  "assets/images/profilePlaceHolder.png",
-                  fit: BoxFit.cover,
-                ),
-                // Then overlay the network image on top when available
-                Image.network(
-                  userInfo.profileImageUrl,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) {
-                      return child; // show image when done
-                    } else {
-                      return const SizedBox.shrink(); // hide while loading
-                    }
-                  },
-                  errorBuilder: (context, error, stackTrace) {
-                    return const SizedBox.shrink(); // keep placeholder on error
-                  },
+                NetworkImageWithPlaceholder(
+                  imageUrl: profileImageUrl,
+                  placeholder: 'assets/images/profilePlaceHolder.png',
                 ),
               ],
-            )
+            ),
           ),
         ),
         Text(
-          userInfo.name,
+          userName,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
         Text(
-          userInfo.bio,
+          userBio,
           style: const TextStyle(fontSize: 16),
           textAlign: TextAlign.center,
         ),

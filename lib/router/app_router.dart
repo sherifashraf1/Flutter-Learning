@@ -1,15 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:profile_demo_app_with_flutter/screens/auth/forget_password_screen.dart';
+import 'package:profile_demo_app_with_flutter/screens/auth/login_screen.dart';
+import 'package:profile_demo_app_with_flutter/screens/auth/registration_screen.dart';
+import 'package:profile_demo_app_with_flutter/screens/firebase/book_details_screen.dart';
+import 'package:profile_demo_app_with_flutter/screens/firebase/book_list_screen.dart';
+import 'package:profile_demo_app_with_flutter/screens/profile/profile_screen.dart';
+import 'package:profile_demo_app_with_flutter/screens/splash/splash_screen.dart';
+import '../models/todo/todo_model.dart';
+import '../screens/home/home_screen.dart';
 import '../screens/movies/movie_details_screen.dart';
 import '../screens/movies/movie_list_screen.dart';
+import '../screens/todo/settings_screen.dart';
+import '../screens/todo/task_details_screen.dart';
+import '../screens/todo/tasks_screen.dart';
 
 class AppRouter {
   // Route names
+  static const splashScreen = "splash_screen";
+  static const loginScreen = "login_screen";
+  static const registerScreen = "register_screen";
+  static const forgetPasswordScreen = "forget_password_screen";
   static const moviesList = 'movies_list_screen';
   static const movieDetails = 'movie_details_screen';
+  static const homeScreen = "home_screen";
+  static const booksListScreen = "books_list_screen";
+  static const bookDetailsScreen = "book_details_screen";
+  static const tasksList = 'tasks_list_screen';
+  static const taskDetails = 'task_details_screen';
+  static const settingsScreen = 'settings_screen';
+  static const profile = 'profile_screen';
 
   // Route generator
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case splashScreen:
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
+      case loginScreen:
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
+      case registerScreen:
+        return MaterialPageRoute(builder: (_) => const RegistrationScreen());
+      case forgetPasswordScreen:
+        return MaterialPageRoute(builder: (_) => const ForgetPasswordScreen());
       case moviesList:
         return MaterialPageRoute(builder: (_) => const MoviesListScreen());
       case movieDetails:
@@ -22,10 +53,37 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => _buildInvalidArgumentsScreen(),
         );
-      default:
+      case homeScreen:
+        return MaterialPageRoute(builder: (_) => HomeScreen());
+      case booksListScreen:
+        return MaterialPageRoute(builder: (_) => BookListScreen());
+      case bookDetailsScreen:
+        final arguments = settings.arguments;
+        if (arguments is String) {
+          return MaterialPageRoute(
+              builder: (_) => BookDetailsScreen(volumeId: arguments));
+        }
         return MaterialPageRoute(
-          builder: (_) => _buildRouteNotFoundScreen(),
+          builder: (_) => _buildInvalidArgumentsScreen(),
         );
+      case tasksList:
+        return MaterialPageRoute(builder: (_) => TasksScreen());
+      case taskDetails:
+        final todo = settings.arguments;
+        if (todo is Todo) {
+          return MaterialPageRoute(
+            builder: (_) => TaskDetailsScreen(todo: todo),
+          );
+        }
+        return MaterialPageRoute(
+          builder: (_) => _buildInvalidArgumentsScreen(),
+        );
+      case settingsScreen:
+        return MaterialPageRoute(builder: (_) => const SettingsScreen());
+      case profile:
+        return MaterialPageRoute(builder: (_) => ProfileScreen());
+      default:
+        return MaterialPageRoute(builder: (_) => _buildRouteNotFoundScreen());
     }
   }
 
@@ -47,7 +105,7 @@ class AppRouter {
                 const Icon(Icons.error_outline, color: Colors.red, size: 64),
                 const SizedBox(height: 16),
                 const Text(
-                  "Invalid Movie ID",
+                  "Invalid Argument",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -57,7 +115,7 @@ class AppRouter {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  "Movie ID is required to view details.",
+                  "Something went wrong.",
                   style: TextStyle(color: Colors.white70),
                   textAlign: TextAlign.center,
                 ),
@@ -70,10 +128,6 @@ class AppRouter {
   }
 
   static Widget _buildRouteNotFoundScreen() {
-    return Scaffold(
-      body: Center(
-        child: Text("Route not found"),
-      ),
-    );
+    return Scaffold(body: Center(child: Text("Route not found")));
   }
 }
