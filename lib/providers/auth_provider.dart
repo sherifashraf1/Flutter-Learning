@@ -29,8 +29,13 @@ class LoginNotifier extends StateNotifier<DataState<void>> {
       await prefs.setString("profileImageUrl", user?.photoURL ?? '');
       
       state = DataState.success(null);
-    } catch (e) {
-      SecureErrorHandler.logError(e, context: 'login');
+    } catch (e, stackTrace) {
+      SecureErrorHandler.logNonFatalError(
+        e,
+        context: 'login',
+        stackTrace: stackTrace,
+        additionalInfo: {'email': email},
+      );
       state = DataState.error(
         title: "Login Failed",
         description: SecureErrorHandler.handleError(e, context: 'login'),
@@ -55,8 +60,13 @@ class RegistrationNotifier extends StateNotifier<DataState<void>> {
     try {
       await FirebaseServices.createAccount(email.trim(), password.trim());
       state = DataState.success(null);
-    } catch (e) {
-      SecureErrorHandler.logError(e, context: 'registration');
+    } catch (e, stackTrace) {
+      SecureErrorHandler.logNonFatalError(
+        e,
+        context: 'registration',
+        stackTrace: stackTrace,
+        additionalInfo: {'email': email},
+      );
       state = DataState.error(
         title: "Registration Failed",
         description: SecureErrorHandler.handleError(e, context: 'registration'),
@@ -93,8 +103,12 @@ class GoogleSignInNotifier extends StateNotifier<DataState<void>> {
       } else {
         throw Exception("Failed to get user credentials");
       }
-    } catch (e) {
-      SecureErrorHandler.logError(e, context: 'googleSignIn');
+    } catch (e, stackTrace) {
+      SecureErrorHandler.logNonFatalError(
+        e,
+        context: 'googleSignIn',
+        stackTrace: stackTrace,
+      );
       state = DataState.error(
         title: "Google Sign In Failed",
         description: SecureErrorHandler.handleError(e, context: 'googleSignIn'),
@@ -119,8 +133,13 @@ class ResetPasswordNotifier extends StateNotifier<DataState<void>> {
     try {
       await FirebaseServices.resetPassword(email.trim());
       state = DataState.success(null);
-    } catch (e) {
-      SecureErrorHandler.logError(e, context: 'resetPassword');
+    } catch (e, stackTrace) {
+      SecureErrorHandler.logNonFatalError(
+        e,
+        context: 'resetPassword',
+        stackTrace: stackTrace,
+        additionalInfo: {'email': email},
+      );
       state = DataState.error(
         title: "Failed to Send Email",
         description: SecureErrorHandler.handleError(e, context: 'resetPassword'),

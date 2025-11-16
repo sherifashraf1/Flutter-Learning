@@ -54,8 +54,18 @@ class BooksService {
       } else {
         throw Exception('Failed to fetch books: ${response.statusCode}');
       }
-    } catch (error) {
-      SecureErrorHandler.logError(error, context: 'getBooks');
+    } catch (error, stackTrace) {
+      SecureErrorHandler.logNonFatalError(
+        error,
+        context: 'getBooks',
+        stackTrace: stackTrace,
+        additionalInfo: {
+          'query': query,
+          'subject': subject,
+          'startIndex': startIndex,
+          'maxResults': maxResults,
+        },
+      );
       throw Exception(
         SecureErrorHandler.handleError(error, context: 'getBooks'),
       );
@@ -92,8 +102,13 @@ class BooksService {
       } else {
         throw Exception('Failed to fetch book details: ${response.statusCode}');
       }
-    } catch (error) {
-      SecureErrorHandler.logError(error, context: 'getBookDetails');
+    } catch (error, stackTrace) {
+      SecureErrorHandler.logNonFatalError(
+        error,
+        context: 'getBookDetails',
+        stackTrace: stackTrace,
+        additionalInfo: {'volumeId': volumeId},
+      );
       throw Exception(
         SecureErrorHandler.handleError(error, context: 'getBookDetails'),
       );

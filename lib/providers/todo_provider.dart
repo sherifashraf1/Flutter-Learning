@@ -45,7 +45,7 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
       );
     } catch (e, stackTrace) {
       // Log critical error and initialize with empty state
-      SecureErrorHandler.logError(
+      SecureErrorHandler.logNonFatalError(
         e,
         context: '_loadTodos - failed to load todos',
         stackTrace: stackTrace,
@@ -91,14 +91,15 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
           final todo = Todo.fromMap(Map<String, dynamic>.from(value));
           todos.add(todo);
         } else if (value != null) {
-          SecureErrorHandler.logError(
+          SecureErrorHandler.logNonFatalError(
             'Unexpected todo value type: ${value.runtimeType}',
             context: 'Loading todo with key: $key',
+            stackTrace: StackTrace.current,
           );
         }
       } catch (e, stackTrace) {
         // Log error for individual todo item but continue loading others
-        SecureErrorHandler.logError(
+        SecureErrorHandler.logNonFatalError(
           e,
           context: 'Loading todo with key: $key',
           stackTrace: stackTrace,
@@ -133,7 +134,14 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
           'description': description,
         },
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      // Log error for monitoring
+      SecureErrorHandler.logNonFatalError(
+        e,
+        context: 'addTodo',
+        stackTrace: stackTrace,
+        additionalInfo: {'title': title, 'description': description},
+      );
       // Audit log: failed creation
       await _auditLogService.logEvent(
         action: 'create',
@@ -178,7 +186,14 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
           'newCompleted': updatedTodo.completed,
         },
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      // Log error for monitoring
+      SecureErrorHandler.logNonFatalError(
+        e,
+        context: 'updateTodo',
+        stackTrace: stackTrace,
+        additionalInfo: {'todoId': updatedTodo.id},
+      );
       // Audit log: failed update
       await _auditLogService.logEvent(
         action: 'update',
@@ -217,7 +232,14 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
           'completed': todo.completed,
         },
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      // Log error for monitoring
+      SecureErrorHandler.logNonFatalError(
+        e,
+        context: 'removeTodo',
+        stackTrace: stackTrace,
+        additionalInfo: {'todoId': id},
+      );
       // Audit log: failed deletion
       await _auditLogService.logEvent(
         action: 'delete',
@@ -256,7 +278,14 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
           'newCompleted': updated.completed,
         },
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      // Log error for monitoring
+      SecureErrorHandler.logNonFatalError(
+        e,
+        context: 'toggleTodoCompletion',
+        stackTrace: stackTrace,
+        additionalInfo: {'todoId': id},
+      );
       // Audit log: failed toggle
       await _auditLogService.logEvent(
         action: 'toggle',

@@ -104,8 +104,16 @@ class BooksNotifier extends StateNotifier<DataState<List<Book>>> {
         _loadMoreEnabled = response.hasMore;
         state = DataState.success(List.from(_books));
       }
-    } catch (e) {
-      SecureErrorHandler.logError(e, context: 'loadBooks');
+    } catch (e, stackTrace) {
+      SecureErrorHandler.logNonFatalError(
+        e,
+        context: 'loadBooks',
+        stackTrace: stackTrace,
+        additionalInfo: {
+          'query': _searchQuery,
+          'startIndex': _startIndex,
+        },
+      );
       
       // Handle 429 (rate limit) specifically
       final errorMessage = e.toString();
@@ -166,8 +174,13 @@ class BookDetailsNotifier extends StateNotifier<DataState<Book>> {
     try {
       final book = await _service.getBookDetails(_volumeId);
       state = DataState.success(book);
-    } catch (error) {
-      SecureErrorHandler.logError(error, context: 'loadBookDetails');
+    } catch (error, stackTrace) {
+      SecureErrorHandler.logNonFatalError(
+        error,
+        context: 'loadBookDetails',
+        stackTrace: stackTrace,
+        additionalInfo: {'volumeId': _volumeId},
+      );
       state = DataState.error(
         title: "Failed to load book details",
         description: SecureErrorHandler.handleError(error, context: 'book details'),
