@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -40,14 +41,14 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: String.fromEnvironment('FIREBASE_API_KEY_WEB'),
-    appId: String.fromEnvironment('FIREBASE_APP_ID_WEB'),
-    messagingSenderId: String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID'),
-    projectId: String.fromEnvironment('FIREBASE_PROJECT_ID'),
-    authDomain: String.fromEnvironment('FIREBASE_AUTH_DOMAIN'),
-    storageBucket: String.fromEnvironment('FIREBASE_STORAGE_BUCKET'),
-    measurementId: String.fromEnvironment('FIREBASE_MEASUREMENT_ID_WEB'),
+  static FirebaseOptions get web => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY_WEB'] ?? String.fromEnvironment('FIREBASE_API_KEY_WEB'),
+    appId: dotenv.env['FIREBASE_APP_ID_WEB'] ?? String.fromEnvironment('FIREBASE_APP_ID_WEB'),
+    messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID'] ?? String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID'),
+    projectId: dotenv.env['FIREBASE_PROJECT_ID'] ?? String.fromEnvironment('FIREBASE_PROJECT_ID'),
+    authDomain: dotenv.env['FIREBASE_AUTH_DOMAIN'] ?? String.fromEnvironment('FIREBASE_AUTH_DOMAIN'),
+    storageBucket: dotenv.env['FIREBASE_STORAGE_BUCKET'] ?? String.fromEnvironment('FIREBASE_STORAGE_BUCKET'),
+    measurementId: dotenv.env['FIREBASE_MEASUREMENT_ID_WEB'] ?? String.fromEnvironment('FIREBASE_MEASUREMENT_ID_WEB'),
   );
 
   static const FirebaseOptions android = FirebaseOptions(

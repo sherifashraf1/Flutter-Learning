@@ -1,8 +1,9 @@
-import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/todo/todo_model.dart';
 import '../services/audit/audit_log_service.dart';
 import '../utils/secure_error_handler.dart';
@@ -12,12 +13,17 @@ final todoNotifierProvider = StateNotifierProvider<TodoNotifier, List<Todo>>((re
 });
 
 class TodoNotifier extends StateNotifier<List<Todo>> {
+  static const String _todosStorageKey = 'todos_list';
   Box? _todoBox;
   final AuditLogService _auditLogService = AuditLogService();
 
-  Box get _box {
+  Box? get _box {
+    if (kIsWeb) {
+      // Hive is not supported on web
+      return null;
+    }
     _todoBox ??= Hive.box('todosBox');
-    return _todoBox!;
+    return _todoBox;
   }
 
   TodoNotifier(): super([]) {
@@ -25,6 +31,12 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
   }
 
   void _loadTodos() {
+    if (kIsWeb) {
+      // Use SharedPreferences for web (async, but we can't await in constructor)
+      _loadTodosFromSharedPreferences();
+      return;
+    }
+    
     // Since Hive box is guaranteed to be open from main(),
     // we can load synchronously without delays or retries.
     try {
@@ -72,16 +84,91 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
   /// For now, returns a system identifier with device info
   String _getUserId() {
     try {
-      // Add device/platform info for better audit trail
-      final platform = Platform.operatingSystem;
-      return 'system_$platform';
-    } catch (e) {
+      if (kIsWeb) {
+        return 'system_web';
+      }
+      // On non-web platforms, include operating system
+      return 'system_${defaultTargetPlatform.name.toLowerCase()}';
+    } catch (_) {
       return 'system';
+    }
+  }
+
+  /// Loads todos from SharedPreferences (for web)
+  Future<void> _loadTodosFromSharedPreferences() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final todosJson = prefs.getString(_todosStorageKey);
+      
+      if (todosJson == null || todosJson.isEmpty) {
+        state = [];
+        return;
+      }
+      
+      final List<dynamic> todosList = jsonDecode(todosJson);
+      final todos = todosList
+          .map((json) => Todo.fromMap(Map<String, dynamic>.from(json)))
+          .toList();
+      
+      state = todos;
+      
+      // Audit log: successful read/list operation
+      _auditLogService.logEvent(
+        action: 'read',
+        entityType: 'todo',
+        entityId: 'all',
+        userId: _getUserId(),
+        outcome: 'success',
+        metadata: {
+          'count': todos.length,
+          'operation': 'list',
+          'platform': 'web',
+        },
+      );
+    } catch (e, stackTrace) {
+      SecureErrorHandler.logNonFatalError(
+        e,
+        context: '_loadTodosFromSharedPreferences - failed to load todos',
+        stackTrace: stackTrace,
+      );
+      state = [];
+      
+      // Audit log: failed read/list operation
+      _auditLogService.logEvent(
+        action: 'read',
+        entityType: 'todo',
+        entityId: 'all',
+        userId: _getUserId(),
+        outcome: 'failure',
+        errorMessage: e.toString(),
+        metadata: {
+          'operation': 'list',
+          'platform': 'web',
+        },
+      );
+    }
+  }
+
+  /// Saves todos to SharedPreferences (for web)
+  Future<void> _saveTodosToSharedPreferences() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final todosJson = jsonEncode(state.map((todo) => todo.toMap()).toList());
+      await prefs.setString(_todosStorageKey, todosJson);
+    } catch (e, stackTrace) {
+      SecureErrorHandler.logNonFatalError(
+        e,
+        context: '_saveTodosToSharedPreferences - failed to save todos',
+        stackTrace: stackTrace,
+      );
     }
   }
 
   List<Todo> _readTodosFromBox() {
     final box = _box;
+    if (box == null) {
+      return [];
+    }
     final List<Todo> todos = [];
     
     for (var key in box.keys) {
@@ -112,8 +199,36 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
   }
 
   Future<void> addTodo(String title, String description) async {
+    final todo = Todo(
+      id: DateTime.now().microsecondsSinceEpoch.toString(),
+      title: title,
+      description: description,
+    );
+    
+    if (kIsWeb) {
+      // Use SharedPreferences for web
+      state = [...state, todo];
+      await _saveTodosToSharedPreferences();
+      
+      // Audit log: successful creation
+      await _auditLogService.logEvent(
+        action: 'create',
+        entityType: 'todo',
+        entityId: todo.id,
+        userId: _getUserId(),
+        outcome: 'success',
+        metadata: {
+          'title': title,
+          'description': description,
+        },
+      );
+      return;
+    }
+    
     try {
       final box = _box;
+      if (box == null) return;
+      
       final todo = Todo(
           id: DateTime.now().microsecondsSinceEpoch.toString(),
           title: title,
@@ -160,8 +275,38 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
   }
 
   Future<void> updateTodo(Todo updatedTodo) async {
+    if (kIsWeb) {
+      // Use SharedPreferences for web
+      final oldTodo = state.firstWhere((t) => t.id == updatedTodo.id);
+      state = [
+        for (final t in state)
+          if (t.id == updatedTodo.id) updatedTodo else t
+      ];
+      await _saveTodosToSharedPreferences();
+      
+      // Audit log: successful update
+      await _auditLogService.logEvent(
+        action: 'update',
+        entityType: 'todo',
+        entityId: updatedTodo.id,
+        userId: _getUserId(),
+        outcome: 'success',
+        metadata: {
+          'oldTitle': oldTodo.title,
+          'newTitle': updatedTodo.title,
+          'oldDescription': oldTodo.description,
+          'newDescription': updatedTodo.description,
+          'oldCompleted': oldTodo.completed,
+          'newCompleted': updatedTodo.completed,
+        },
+      );
+      return;
+    }
+    
     try {
       final box = _box;
+      if (box == null) return;
+      
       final oldTodo = state.firstWhere((t) => t.id == updatedTodo.id);
       
       await box.put(updatedTodo.id, updatedTodo.toMap());
@@ -212,8 +357,32 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
   }
 
   Future<void> removeTodo(String id) async {
+    if (kIsWeb) {
+      // Use SharedPreferences for web
+      final todo = state.firstWhere((t) => t.id == id);
+      state = state.where((t) => t.id != id).toList();
+      await _saveTodosToSharedPreferences();
+      
+      // Audit log: successful deletion
+      await _auditLogService.logEvent(
+        action: 'delete',
+        entityType: 'todo',
+        entityId: id,
+        userId: _getUserId(),
+        outcome: 'success',
+        metadata: {
+          'title': todo.title,
+          'description': todo.description,
+          'completed': todo.completed,
+        },
+      );
+      return;
+    }
+    
     try {
       final box = _box;
+      if (box == null) return;
+      
       final todo = state.firstWhere((t) => t.id == id);
       
       await box.delete(id);
@@ -254,8 +423,36 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
   }
 
   Future<void> toggleTodoCompletion(String id) async {
+    if (kIsWeb) {
+      // Use SharedPreferences for web
+      final todo = state.firstWhere((t) => t.id == id);
+      final updated = todo.copyWith(completed: !todo.completed);
+      state = [
+        for (final t in state)
+          if (t.id == id) updated else t
+      ];
+      await _saveTodosToSharedPreferences();
+      
+      // Audit log: successful toggle
+      await _auditLogService.logEvent(
+        action: 'toggle',
+        entityType: 'todo',
+        entityId: id,
+        userId: _getUserId(),
+        outcome: 'success',
+        metadata: {
+          'title': todo.title,
+          'oldCompleted': todo.completed,
+          'newCompleted': updated.completed,
+        },
+      );
+      return;
+    }
+    
     try {
       final box = _box;
+      if (box == null) return;
+      
       final todo = state.firstWhere((t) => t.id == id);
       final updated = todo.copyWith(completed: !todo.completed);
       

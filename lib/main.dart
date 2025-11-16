@@ -55,12 +55,26 @@ Future<void> _initializeFirebase() async {
 }
 
 /// Initializes Hive and opens required boxes
+/// Note: Hive is not supported on web, so we skip initialization on web platform
 Future<void> _initializeHive() async {
-  await Hive.initFlutter();
-  await Future.wait([
-    Hive.openBox('todosBox'),
-    Hive.openBox('auditLogsBox'),
-  ]);
+  if (kIsWeb) {
+    // Hive doesn't support web platform
+    // On web, you might want to use SharedPreferences or IndexedDB instead
+    return;
+  }
+  
+  try {
+    await Hive.initFlutter();
+    await Future.wait([
+      Hive.openBox('todosBox'),
+      Hive.openBox('auditLogsBox'),
+    ]);
+  } catch (e) {
+    // Log error but don't crash the app
+    if (kDebugMode) {
+      debugPrint('Failed to initialize Hive: $e');
+    }
+  }
 }
 
 /// Loads the saved theme mode or returns light as default
@@ -74,7 +88,18 @@ Future<AdaptiveThemeMode> _loadThemeMode() async {
 }
 
 /// Sets up global error handling for Crashlytics
+/// Note: Crashlytics is not fully supported on web, so we skip it on web platform
 void _setupErrorHandling() {
+  if (kIsWeb) {
+    // On web, just use standard error handling
+    FlutterError.onError = (errorDetails) {
+      if (kDebugMode) {
+        FlutterError.presentError(errorDetails);
+      }
+    };
+    return;
+  }
+
   // Sync errors (main thread)
   FlutterError.onError = (errorDetails) {
     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
