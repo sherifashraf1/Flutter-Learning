@@ -31,6 +31,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
 
+  // Riverpod listeners
+  late final void Function() _removeLoginListener;
+  late final void Function() _removeGoogleListener;
+
   // Constants
   static const double _logoWidthFactor = 0.4;
   static const double _logoHeightFactor = 0.13;
@@ -43,7 +47,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.initState();
     _setupValidationListeners();
     _setupFocusListeners();
+    _setupRiverpodListeners();
     _unfocusOnInit();
+  }
+
+  /// Sets up Riverpod state listeners for authentication providers
+  void _setupRiverpodListeners() {
+    _removeLoginListener = ref.listen<DataState<void>>(
+      loginStateProvider,
+      (previous, next) => _handleAuthStateChange(previous, next),
+    );
+    
+    _removeGoogleListener = ref.listen<DataState<void>>(
+      googleSignInStateProvider,
+      (previous, next) => _handleAuthStateChange(previous, next),
+    );
   }
 
   void _setupValidationListeners() {
@@ -98,6 +116,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     _passwordController.dispose();
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
+    _removeLoginListener();
+    _removeGoogleListener();
     super.dispose();
   }
 
@@ -238,18 +258,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final loginState = ref.watch(loginStateProvider);
     final googleSignInState = ref.watch(googleSignInStateProvider);
-    
-    // Listen to login state changes
-    ref.listen<DataState<void>>(
-      loginStateProvider,
-      (previous, next) => _handleAuthStateChange(previous, next),
-    );
-    
-    // Listen to Google Sign-In state changes
-    ref.listen<DataState<void>>(
-      googleSignInStateProvider,
-      (previous, next) => _handleAuthStateChange(previous, next),
-    );
 
     // Use Google Sign-In state if it's loading, otherwise use login state
     final currentState = googleSignInState.state == ViewState.loading 
