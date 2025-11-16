@@ -12,31 +12,40 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
-  // Constants
   static const double _logoWidthFactor = 0.6;
   static const double _logoHeightFactor = 0.6;
 
-  FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.instance;
+  final FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.instance;
+  Future<void>? _initFuture;
 
   @override
   void initState() {
-    init();
     super.initState();
+    _initFuture = _init();
   }
 
- void init() async {
-    Future.delayed(const Duration(seconds: 3), () async {
-      final prefs = await SharedPreferences.getInstance();
-      String? email = prefs.getString("email");
-      if (email != null) {
-        firebaseAnalytics.logEvent(name: "Home screen", parameters: {'time': DateTime.now().toIso8601String()});
-        Navigator.pushReplacementNamed(context, AppRouter.homeScreen);
-      } else {
-        firebaseAnalytics.logEvent(name: "Login screen", parameters: {'time': DateTime.now().toIso8601String()});
-        Navigator.pushReplacementNamed(context, AppRouter.loginScreen);
-      }
-    });
+  Future<void> _init() async {
+    await Future<void>.delayed(const Duration(seconds: 3));
+    if (!mounted) return;
+    
+    final prefs = await SharedPreferences.getInstance();
+    final String? email = prefs.getString("email");
+    
+    if (email != null) {
+      await firebaseAnalytics.logEvent(
+        name: "home_screen",
+        parameters: {'time': DateTime.now().toIso8601String()},
+      );
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, AppRouter.homeScreen);
+    } else {
+      await firebaseAnalytics.logEvent(
+        name: "login_screen",
+        parameters: {'time': DateTime.now().toIso8601String()},
+      );
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, AppRouter.loginScreen);
+    }
   }
 
   @override
