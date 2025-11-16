@@ -14,7 +14,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool _isLoggedIn = false;
-  int _tabLength = 4;
+  bool _initialized = false;
 
   @override
   void initState() {
@@ -25,23 +25,31 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _checkLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
     final email = prefs.getString("email");
+    if (!mounted) return;
     setState(() {
       _isLoggedIn = email != null;
-      _tabLength = _isLoggedIn ? 4 : 3; // Hide Tasks tab if not logged in
+      _initialized = true;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!_initialized) {
+      return const Scaffold(body: SizedBox.shrink());
+    }
+
+    final tabs = _buildTabs();
+    final views = _buildTabViews();
+
     return DefaultTabController(
-      length: _tabLength,
+      length: tabs.length,
       child: Scaffold(
         body: TabBarView(
           physics: const NeverScrollableScrollPhysics(),
-          children: _buildTabViews(),
+          children: views,
         ),
         bottomNavigationBar: TabBar(
-          tabs: _buildTabs(),
+          tabs: tabs,
           labelColor: Theme.of(context).colorScheme.primary,
           unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
           indicatorColor: Colors.transparent,
